@@ -10,7 +10,7 @@ import { wait } from "./utils";
 
 */
 
-const refreshToken = async (user: UserDocument) => {
+async function refreshToken(user: UserDocument) {
   const refresh_token = user.spotifyRefreshToken;
 
   const params = new URLSearchParams({
@@ -38,7 +38,7 @@ const refreshToken = async (user: UserDocument) => {
   return access_token;
 };
 
-export const getAccessToken = async (user: UserDocument) => {
+export async function getAccessToken(user: UserDocument) {
   // 1 min window
   if (user.spotifyTokenExpires.getTime() > plusSeconds(new Date(), 60).getTime()) {
     return user.spotifyToken;
@@ -47,7 +47,7 @@ export const getAccessToken = async (user: UserDocument) => {
   return await refreshToken(user);
 };
 
-const fetchData = async <T>(url: string, token: string): Promise<T> => {
+async function fetchData<T>(url: string, token: string): Promise<T> {
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -73,7 +73,7 @@ const mapSavedTrackToSong = ({ track }: SpotifyApi.SavedTrackObject): SongData =
 // UsersSavedTracksResponse
 // https://developer.spotify.com/web-api/get-users-saved-tracks/
 export const fetchUserSavedTracks = async (token: string): Promise<SongData[]> => {
-  const allSongs: { [x: string]: SongData } = {};
+  const allSongs: Record<string, SongData> = {};
 
   const params = new URLSearchParams();
   params.append("limit", "50");
@@ -100,7 +100,7 @@ export const fetchUserSavedTracks = async (token: string): Promise<SongData[]> =
   return Object.values(allSongs);
 };
 
-export const fetchSongsFromAllPlaylists = async (token: string): Promise<SongData[]> => {
+export async function fetchSongsFromAllPlaylists(token: string): Promise<SongData[]> {
   const allSongs: SongData[] = [];
 
   const params = new URLSearchParams();
@@ -139,7 +139,7 @@ export const fetchSongsFromAllPlaylists = async (token: string): Promise<SongDat
   return allSongs;
 };
 
-export const fetchSongsForPlaylist = async (token: string, href: string): Promise<SongData[]> => {
+export async function fetchSongsForPlaylist(token: string, href: string): Promise<SongData[]> {
   const playlistSongs: SongData[] = [];
 
   const params = new URLSearchParams();
@@ -170,8 +170,8 @@ export const fetchSongsForPlaylist = async (token: string, href: string): Promis
   return playlistSongs;
 };
 
-export const fetchAllUserTracks = async (token: string): Promise<SongData[]> => {
-  const songs: { [x: string]: SongData } = {};
+export async function fetchAllUserTracks(token: string): Promise<SongData[]> {
+  const songs: Record<string, SongData> = {};
 
   const saved = await fetchUserSavedTracks(token);
   const playlistTracks = await fetchSongsFromAllPlaylists(token);
@@ -182,7 +182,7 @@ export const fetchAllUserTracks = async (token: string): Promise<SongData[]> => 
   return Object.values(songs);
 };
 
-export const fetchSongInfo = async (token: string, ids: string) => {
+export async function fetchSongInfo(token: string, ids: string) {
   const params = new URLSearchParams();
 
   params.append("ids", ids);
@@ -193,7 +193,7 @@ export const fetchSongInfo = async (token: string, ids: string) => {
   return await fetchData<SpotifyApi.MultipleTracksResponse>(url, token);
 };
 
-export const playSong = async (token: string, songUri: string) => {
+export async function playSong(token: string, songUri: string) {
   const res = await fetch("https://api.spotify.com/v1/me/player/play", {
     headers: {
       Authorization: `Bearer ${token}`
@@ -207,7 +207,7 @@ export const playSong = async (token: string, songUri: string) => {
   // console.log(await res.json());
 };
 
-export const playSongs = async (token: string, uris: string[]) => {
+export async function playSongs(token: string, uris: string[]) {
   const res = await fetch("https://api.spotify.com/v1/me/player/play", {
     headers: {
       Authorization: `Bearer ${token}`

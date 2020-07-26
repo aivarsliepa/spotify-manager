@@ -31,11 +31,11 @@ const spotifyOpts = {
 const spotifyCallback = async (
   accessToken: string,
   refreshToken: string,
-  expires_in: any,
+  expiresIn: any,
   profile: any,
   done: Function
 ) => {
-  const spotifyTokenExpires = plusSeconds(new Date(), expires_in);
+  const spotifyTokenExpires = plusSeconds(new Date(), expiresIn);
 
   const query = { spotifyId: profile.id };
   const data = {

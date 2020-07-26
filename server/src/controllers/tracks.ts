@@ -3,7 +3,6 @@ import { RequestHandler } from "express";
 import { UserDocument, SongData } from "../models/User";
 import { getAccessToken, fetchSongInfo, playSong } from "../spotify-service";
 
-// save songs to user which are not already in DB
 export const getMutlipleSongsInfo: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
 
