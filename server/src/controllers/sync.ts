@@ -11,7 +11,7 @@ export const getSync: RequestHandler = async (req, res) => {
     const token = await getAccessToken(user);
     const tracks = await fetchAllUserTracks(token);
 
-    const songMap: { [x: string]: SongData } = {};
+    const songMap: Record<string, SongData> = {};
     user.songs.forEach(song => (songMap[song.spotifyId] = song));
 
     let shouldSave = false;

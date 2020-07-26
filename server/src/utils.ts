@@ -1,3 +1,9 @@
+export const wait = async (ms: number) => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(), ms);
+  });
+};
+
 export const plusSeconds = (date: Date, seconds: number) => {
   const newDate = new Date();
   newDate.setTime(date.getTime() + seconds * 1000);

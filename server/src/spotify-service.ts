@@ -2,7 +2,7 @@ import { URLSearchParams } from "url";
 import fetch from "node-fetch";
 
 import { UserDocument, SongData } from "./models/User";
-import { plusSeconds } from "./utils/time";
+import { plusSeconds } from "./utils";
 import { wait } from "./utils";
 
 /*

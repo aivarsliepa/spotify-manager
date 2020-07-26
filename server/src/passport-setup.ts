@@ -3,7 +3,7 @@ import { Strategy as SpotifyStrategy } from "passport-spotify";
 import passport from "passport";
 
 import User from "./models/User";
-import { plusSeconds } from "./utils/time";
+import { plusSeconds } from "./utils";
 
 const jwtOpts: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -56,7 +56,7 @@ const spotifyCallback = async (
 
     done(null, user);
   } catch (error) {
-    console.error("sporityStrategy", error);
+    console.error("spotityStrategy", error);
     done(error, null);
   }
 };

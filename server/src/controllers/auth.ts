@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
 import { UserDocument } from "../models/User";
-import { plusSeconds } from "../utils/time";
+import { plusSeconds } from "../utils";
 
 export const getSpotifyCallback: RequestHandler = (req, res) => {
   const user = req.user as UserDocument;

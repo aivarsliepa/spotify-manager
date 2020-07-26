@@ -79,7 +79,6 @@ export const getPlaySong: RequestHandler = async (req, res) => {
     const data = await fetchSongInfo(token, songId);
 
     const [song] = data.tracks;
-    // song.u
     await playSong(token, song.uri);
     res.send();
   } catch (error) {
