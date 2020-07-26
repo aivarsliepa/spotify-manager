@@ -1,0 +1,54 @@
+{
+  // Place your spotify-wrapper-web workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+  // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+  // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+  // used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+  // Placeholders with the same ids are connected.
+  // Example:
+  "React function component with redux": {
+    "scope": "typescriptreact",
+    "prefix": "rfcr",
+    "body": [
+      "import React from \"react\";",
+      "import { MapStateToProps, MapDispatchToProps, connect } from \"react-redux\";",
+      "",
+      "import { AppState } from \"../../store\";",
+      "",
+      "interface StateProps {}",
+      "",
+      "interface DispatchProps {}",
+      "",
+      "interface OwnProps {}",
+      "",
+      "type Props = StateProps & DispatchProps & OwnProps;",
+      "",
+      "const ${1:${TM_FILENAME_BASE}}: React.FC<Props> = () => {",
+      "return <div>${1:${TM_FILENAME_BASE}} works!</div>;",
+      "};",
+      "",
+      "const mapStateToProps: MapStateToProps<StateProps, OwnProps, AppState> = state => ({});",
+      "",
+      "const mapDispatchToProps: MapDispatchToProps<DispatchProps, OwnProps> = dispatch => ({});",
+      "",
+      "export default connect(mapStateToProps, mapDispatchToProps)(${1:${TM_FILENAME_BASE}});"
+    ],
+    "description": "React function component with redux"
+  },
+  "React function component": {
+    "scope": "typescriptreact",
+    "prefix": "rfc",
+    "body": [
+      "import React from \"react\";",
+      "",
+      "interface Props {}",
+      "",
+      "const ${1:${TM_FILENAME_BASE}}: React.FC<Props> = () => {",
+      "return <div>${1:${TM_FILENAME_BASE}} works!</div>;",
+      "};",
+      "",
+      "export default ${1:${TM_FILENAME_BASE}};"
+    ],
+    "description": "React function component"
+  }
+}

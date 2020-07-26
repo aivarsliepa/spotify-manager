@@ -1,0 +1,63 @@
+{
+  "name": "spotify-wrapper-api",
+  "version": "0.1.0",
+  "description": "Spotify Wrapper API",
+  "author": "Aivars Liepa",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aivarsliepa/spotify-wrapper-api"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run serve",
+    "build": "npm run build-ts && npm run lint",
+    "serve": "node dist/server.js",
+    "watch-node": "nodemon dist/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "test": "jest --forceExit --coverage --verbose",
+    "watch-test": "npm run test -- --watchAll",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "debug": "npm run build && npm run watch-debug",
+    "serve-debug": "nodemon --inspect dist/server.js",
+    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.7.11",
+    "node-fetch": "^2.6.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "passport-spotify": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.1",
+    "@types/compression": "^1.0.1",
+    "@types/cors": "^2.8.6",
+    "@types/dotenv": "^6.1.1",
+    "@types/eslint": "^6.1.2",
+    "@types/express": "^4.17.1",
+    "@types/jsonwebtoken": "^8.3.5",
+    "@types/mongoose": "^5.5.31",
+    "@types/node-fetch": "^2.5.3",
+    "@types/passport": "^1.0.1",
+    "@types/passport-jwt": "^3.0.3",
+    "@types/spotify-api": "0.0.1",
+    "@typescript-eslint/eslint-plugin": "^2.4.0",
+    "@typescript-eslint/parser": "^2.4.0",
+    "concurrently": "^5.0.0",
+    "eslint": "^6.5.1",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.4",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  }
+}
