@@ -25,7 +25,7 @@ const jwtStrategy = new JwtStrategy(jwtOpts, verifyCallback);
 const spotifyOpts = {
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: process.env.CALLBACK_URL
+  callbackURL: process.env.SERVER_URI + "/auth/spotify/callback"
 };
 
 const spotifyCallback = async (
