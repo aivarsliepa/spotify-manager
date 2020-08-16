@@ -3,6 +3,7 @@ import { URLSearchParams } from "url";
 
 import { UserDocument, SongData } from "./models/User";
 import { plusSeconds, createUrlWithParams, wait } from "./utils";
+import * as SharedTypes from "@aivarsliepa/shared";
 
 const api = {
   token: "https://accounts.spotify.com/api/token",
@@ -85,8 +86,8 @@ async function fetchSongsFromAllPlaylists(token: string, allSongs: Record<string
   await Promise.all(requests);
 }
 
-export async function fetchPlaylistData(token: string): Promise<ResponseTypes.Playlist[]> {
-  const playlists: ResponseTypes.Playlist[] = [];
+export async function fetchPlaylistData(token: string): Promise<SharedTypes.Playlist[]> {
+  const playlists: SharedTypes.Playlist[] = [];
 
   const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(api.myPlaylists, token);
   playlistResponses.map(playlistReponse =>

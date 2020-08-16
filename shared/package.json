@@ -1,0 +1,12 @@
+{
+  "name": "@aivarsliepa/shared",
+  "version": "1.0.0",
+  "description": "Shared types",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aivars Liepa",
+  "license": "ISC"
+}

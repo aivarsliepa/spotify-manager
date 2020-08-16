@@ -1,6 +1,5 @@
 import { store } from "./store";
-import { Song } from "./store/songs/types";
-import { Playlist } from "./store/playlists/types";
+import * as SharedTypes from "@aivarsliepa/shared";
 
 // TODO: make it as env variable
 const API_ROOT = "http://localhost:9000";
@@ -15,7 +14,7 @@ const getRequest = (url: string) =>
   });
 
 // TODO shared types
-export const fetchSongs = async (): Promise<{ songs: Song[] }> => {
+export const fetchSongs = async (): Promise<SharedTypes.GetSongsResponse> => {
   const res = await getRequest(`${API_ROOT}/get-all-songs`);
   return await res.json();
 };
@@ -25,7 +24,7 @@ export const fetchSongInfo = async (id: string) => {
   return await res.json();
 };
 
-export const fetchPlaylists = async (): Promise<{ playlists: Playlist[] }> => {
+export const fetchPlaylists = async (): Promise<SharedTypes.GetPlaylistsResponse> => {
   const res = await getRequest(`${API_ROOT}/playlists`);
   return await res.json();
 };
