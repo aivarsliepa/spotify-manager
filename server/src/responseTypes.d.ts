@@ -6,7 +6,16 @@ declare namespace ResponseTypes {
     artists: string;
   }
 
+  interface Playlist {
+    spotifyId: string;
+    name: string;
+  }
+
   interface GetSongsResponse {
     songs: Song[];
+  }
+
+  interface GetPlaylistsResponse {
+    playlists: Playlist[];
   }
 }

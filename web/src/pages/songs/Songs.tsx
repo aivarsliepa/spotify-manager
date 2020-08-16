@@ -22,7 +22,9 @@ type Props = StateProps & DispatchProps & OwnProps;
 const Songs: React.FC<Props> = ({ setSongs, songs }) => {
   useEffect(() => {
     // TODO: error handling
-    fetchSongs().then(({ songs }) => setSongs(songs));
+    fetchSongs()
+      .then(({ songs }) => setSongs(songs))
+      .catch(console.log);
   }, [setSongs]);
 
   return (

@@ -6,7 +6,7 @@ import { songsReducer } from "./songs/reducers";
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  songs: songsReducer
+  songs: songsReducer,
 });
 
 export const store = createStore(rootReducer);

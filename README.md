@@ -1,3 +1,3 @@
-## Spotify wrapper
+## Spotify manager
 
 Work in progress..

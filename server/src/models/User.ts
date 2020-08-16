@@ -13,7 +13,6 @@ export interface UserData {
   spotifyRefreshToken: string;
   spotifyTokenExpires: Date;
   songs: SongData[];
-  currentList: SongData[];
 }
 
 export type UserDocument = Omit<UserData, "songs"> &
@@ -29,9 +28,9 @@ const userSchema = new Schema({
   songs: [
     {
       spotifyId: String,
-      labels: [String]
-    }
-  ]
+      labels: [String],
+    },
+  ],
 });
 
 const User = model<UserDocument>("User", userSchema);

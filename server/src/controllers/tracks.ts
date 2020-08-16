@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 
 import { UserDocument, SongData } from "../models/User";
-import { getAccessToken, fetchSongInfo, playSong } from "../spotify-service";
+import { getAccessToken, fetchSongInfo, playSongs } from "../spotify-service";
 
 export const getMutlipleSongsInfo: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
@@ -19,6 +19,9 @@ export const getMutlipleSongsInfo: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * Fetch info for single song by it's ID
+ */
 export const getSingleSongInfo: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
   const { songId } = req.params;
@@ -34,6 +37,9 @@ export const getSingleSongInfo: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * Fetch song info (max 50 songs), song ids are taken from database, info fetched from Spotify API
+ */
 export const getSongs: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
   const { limit = 50, offset = 0 } = req.query;
@@ -41,7 +47,7 @@ export const getSongs: RequestHandler = async (req, res) => {
 
   const ids: string = songs.map(song => song.spotifyId).join(",");
 
-  const songMap: { [x: string]: SongData } = {};
+  const songMap: Record<string, SongData> = {};
 
   for (const song of songs) {
     const { labels, spotifyId }: SongData = song.toObject();
@@ -54,7 +60,7 @@ export const getSongs: RequestHandler = async (req, res) => {
 
     const songRes: ResponseTypes.Song[] = data.tracks.map(track => {
       const artists = track.artists.map(artist => artist.name).join(", ");
-      const id = track.linked_from ? track.linked_from.id : track.id;
+      const id = track.linked_from?.id ?? track.id;
       const song = songMap[id];
 
       const { labels, spotifyId } = song;
@@ -69,6 +75,9 @@ export const getSongs: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * Play song by ID
+ */
 export const getPlaySong: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
   const { songId } = req.params;
@@ -78,7 +87,7 @@ export const getPlaySong: RequestHandler = async (req, res) => {
     const data = await fetchSongInfo(token, songId);
 
     const [song] = data.tracks;
-    await playSong(token, song.uri);
+    await playSongs(token, [song.uri]);
     res.send();
   } catch (error) {
     console.error("error getting song info", error);

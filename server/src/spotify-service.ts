@@ -1,31 +1,33 @@
-import { URLSearchParams } from "url";
 import fetch from "node-fetch";
+import { URLSearchParams } from "url";
 
 import { UserDocument, SongData } from "./models/User";
-import { plusSeconds } from "./utils";
-import { wait } from "./utils";
+import { plusSeconds, createUrlWithParams, wait } from "./utils";
 
-/*
-  Spotify track uri is made by `spotify:track:${id}`
+const api = {
+  token: "https://accounts.spotify.com/api/token",
+  myTracks: "https://api.spotify.com/v1/me/tracks",
+  myPlaylists: "https://api.spotify.com/v1/me/playlists",
+  tracks: "https://api.spotify.com/v1/tracks",
+  play: "https://api.spotify.com/v1/me/player/play",
+};
 
-*/
-
-async function refreshToken(user: UserDocument) {
+async function refreshToken(user: UserDocument): Promise<string> {
   const refresh_token = user.spotifyRefreshToken;
 
-  const params = new URLSearchParams({
+  const body = new URLSearchParams({
     grant_type: "refresh_token",
-    refresh_token
+    refresh_token,
   });
   const headers = {
     Authorization: "Basic " + Buffer.from(process.env.CLIENT_ID + ":" + process.env.CLIENT_SECRET).toString("base64"),
-    "Content-Type": "application/x-www-form-urlencoded"
+    "Content-Type": "application/x-www-form-urlencoded",
   };
 
-  const res = await fetch("https://accounts.spotify.com/api/token", {
+  const res = await fetch(api.token, {
     method: "POST",
     headers,
-    body: params
+    body,
   });
 
   const { access_token, expires_in } = await res.json();
@@ -36,188 +38,121 @@ async function refreshToken(user: UserDocument) {
   await user.save();
 
   return access_token;
-};
+}
 
-export async function getAccessToken(user: UserDocument) {
+export async function getAccessToken(user: UserDocument): Promise<string> {
   // 1 min window
   if (user.spotifyTokenExpires.getTime() > plusSeconds(new Date(), 60).getTime()) {
     return user.spotifyToken;
   }
 
   return await refreshToken(user);
-};
+}
 
-async function fetchData<T>(url: string, token: string): Promise<T> {
+async function fetchWithRetry<T>(url: string, token: string): Promise<T> {
   const res = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   // too many requests code
   if (res.status === 429 && !Number.isNaN(Number(res.headers.get("Retry-After")))) {
     await wait(+res.headers.get("Retry-After"));
-    return await fetchData(url, token);
+    return await fetchWithRetry(url, token);
   } else if (res.status !== 200) {
+    console.log(res.status);
     throw Error(res.statusText);
   }
 
   return await res.json();
-};
+}
 
-const mapSavedTrackToSong = ({ track }: SpotifyApi.SavedTrackObject): SongData => ({
-  spotifyId: track.id,
-  labels: []
-});
-
-// UsersSavedTracksResponse
 // https://developer.spotify.com/web-api/get-users-saved-tracks/
-export const fetchUserSavedTracks = async (token: string): Promise<SongData[]> => {
-  const allSongs: Record<string, SongData> = {};
+async function fetchUserSavedTracks(token: string, allSongs: Record<string, SongData>): Promise<void> {
+  const responses = await fetchAllFromAPI<SpotifyApi.UsersSavedTracksResponse>(api.myTracks, token);
+  responses.forEach(response => response.items.map(mapSpotifyTrackToSong).forEach(song => addSongToObject(song, allSongs)));
+}
 
-  const params = new URLSearchParams();
-  params.append("limit", "50");
-  const url = "https://api.spotify.com/v1/me/tracks?" + params.toString();
-  const body = await fetchData<SpotifyApi.UsersSavedTracksResponse>(url, token);
+async function fetchSongsFromAllPlaylists(token: string, allSongs: Record<string, SongData>): Promise<void> {
+  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(api.myPlaylists, token);
 
-  const urls: string[] = [];
-
-  for (let i = 50; i < body.total; i += 50) {
-    const params = new URLSearchParams();
-    params.append("limit", "50");
-    params.append("offset", i.toString());
-    urls.push("https://api.spotify.com/v1/me/tracks?" + params.toString());
-  }
-
-  const requests = urls.map(async url => {
-    const body = await fetchData<SpotifyApi.UsersSavedTracksResponse>(url, token);
-    body.items.map(mapSavedTrackToSong).forEach(song => (allSongs[song.spotifyId] = song));
+  const requests = playlistResponses.map(async playlistResponse => {
+    const songRequests = playlistResponse.items.map(async playlist => await fetchSongsForPlaylist(token, playlist.tracks.href, allSongs));
+    return await Promise.all(songRequests);
   });
-
-  body.items.map(mapSavedTrackToSong).forEach(song => (allSongs[song.spotifyId] = song));
-  await Promise.all(requests);
-
-  return Object.values(allSongs);
-};
-
-export async function fetchSongsFromAllPlaylists(token: string): Promise<SongData[]> {
-  const allSongs: SongData[] = [];
-
-  const params = new URLSearchParams();
-  params.append("limit", "50");
-  const url = "https://api.spotify.com/v1/me/playlists?" + params.toString();
-  const body = await fetchData<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(url, token);
-
-  const urls: string[] = [];
-
-  for (let i = 50; i < body.total; i += 50) {
-    const params = new URLSearchParams();
-    params.append("limit", "50");
-    params.append("offset", i.toString());
-    urls.push("https://api.spotify.com/v1/me/playlists?" + params.toString());
-  }
-
-  const requests = urls.map(async url => {
-    const body = await fetchData<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(url, token);
-    const reqs = body.items.map(async album => {
-      const songs = await fetchSongsForPlaylist(token, album.tracks.href);
-      allSongs.push(...songs);
-    });
-
-    await Promise.all(reqs);
-  });
-
-  const reqs = body.items.map(async album => {
-    const songs = await fetchSongsForPlaylist(token, album.tracks.href);
-    allSongs.push(...songs);
-  });
-
-  requests.push(...reqs);
 
   await Promise.all(requests);
+}
 
-  return allSongs;
-};
+export async function fetchPlaylistData(token: string): Promise<ResponseTypes.Playlist[]> {
+  const playlists: ResponseTypes.Playlist[] = [];
 
-export async function fetchSongsForPlaylist(token: string, href: string): Promise<SongData[]> {
-  const playlistSongs: SongData[] = [];
+  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(api.myPlaylists, token);
+  playlistResponses.map(playlistReponse =>
+    playlistReponse.items.map(playlist => playlists.push({ spotifyId: playlist.id, name: playlist.name }))
+  );
 
-  const params = new URLSearchParams();
-  params.append("limit", "50");
-  const url = `${href}?${params.toString()}`;
-  const body = await fetchData<SpotifyApi.PlaylistTrackResponse>(url, token);
+  return playlists;
+}
 
-  const urls: string[] = [];
-
-  for (let i = 50; i < body.total; i += 50) {
-    const params = new URLSearchParams();
-    params.append("limit", "50");
-    params.append("offset", i.toString());
-    urls.push(`${href}?${params.toString()}`);
-  }
-
-  const requests = urls.map(async url => {
-    const body = await fetchData<SpotifyApi.PlaylistTrackResponse>(url, token);
-    const songs: SongData[] = body.items.map(mapSavedTrackToSong);
-    playlistSongs.push(...songs);
-  });
-
-  const songs: SongData[] = body.items.map(mapSavedTrackToSong);
-  playlistSongs.push(...songs);
-
-  await Promise.all(requests);
-
-  return playlistSongs;
-};
+async function fetchSongsForPlaylist(token: string, href: string, allSongs: Record<string, SongData>): Promise<void> {
+  const responses = await fetchAllFromAPI<SpotifyApi.PlaylistTrackResponse>(href, token);
+  responses.forEach(response => response.items.map(mapSpotifyTrackToSong).forEach(song => addSongToObject(song, allSongs)));
+}
 
 export async function fetchAllUserTracks(token: string): Promise<SongData[]> {
   const songs: Record<string, SongData> = {};
 
-  const saved = await fetchUserSavedTracks(token);
-  const playlistTracks = await fetchSongsFromAllPlaylists(token);
-
-  saved.forEach(song => (songs[song.spotifyId] = song));
-  playlistTracks.forEach(song => (songs[song.spotifyId] = song));
+  await Promise.all([fetchUserSavedTracks(token, songs), fetchSongsFromAllPlaylists(token, songs)]);
 
   return Object.values(songs);
-};
+}
 
-export async function fetchSongInfo(token: string, ids: string) {
-  const params = new URLSearchParams();
+export async function fetchSongInfo(token: string, ids: string): Promise<SpotifyApi.MultipleTracksResponse> {
+  const url = createUrlWithParams(api.tracks, { ids, market: "from_token" });
+  return await fetchWithRetry<SpotifyApi.MultipleTracksResponse>(url, token);
+}
 
-  params.append("ids", ids);
-  params.append("market", "from_token");
-
-  const url = "https://api.spotify.com/v1/tracks?" + params.toString();
-
-  return await fetchData<SpotifyApi.MultipleTracksResponse>(url, token);
-};
-
-export async function playSong(token: string, songUri: string) {
-  const res = await fetch("https://api.spotify.com/v1/me/player/play", {
+export async function playSongs(token: string, uris: string[]): Promise<void> {
+  const res = await fetch(api.play, {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     method: "PUT",
-    body: JSON.stringify({ uris: [songUri] })
-  });
-
-  console.log(res.status);
-  console.log(res.statusText);
-  // console.log(await res.json());
-};
-
-export async function playSongs(token: string, uris: string[]) {
-  const res = await fetch("https://api.spotify.com/v1/me/player/play", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    method: "PUT",
-    body: JSON.stringify({ uris })
+    body: JSON.stringify({ uris }),
   });
 
   // TODO: try if RETRY AFTER
   console.log(res.status);
   console.log(res.statusText);
   // console.log(await res.json());
-};
+}
+
+export async function fetchAllFromAPI<T extends { total: number }>(apiUrl: string, token: string): Promise<T[]> {
+  // need to make first request to see the total number of items -> `response.body.total`
+  const url = createUrlWithParams(apiUrl, { limit: "50" });
+  const firstRequestBody = await fetchWithRetry<T>(url, token);
+
+  // prepare requests for the rest of the playlists
+  const urls: string[] = [];
+  for (let i = 50; i < firstRequestBody.total; i += 50) {
+    urls.push(createUrlWithParams(apiUrl, { limit: "50", offset: i.toString() }));
+  }
+
+  const requests = urls.map(url => fetchWithRetry<T>(url, token));
+  const restOfRequests = await Promise.all(requests);
+
+  return [firstRequestBody, ...restOfRequests];
+}
+
+function addSongToObject(song: SongData, object: Record<string, SongData>) {
+  object[song.spotifyId] = song;
+}
+
+function mapSpotifyTrackToSong({ track }: { track: SpotifyApi.TrackObjectFull }): SongData {
+  return {
+    spotifyId: track.id,
+    labels: [],
+  };
+}
