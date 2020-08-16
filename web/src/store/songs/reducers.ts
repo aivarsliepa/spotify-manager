@@ -3,10 +3,10 @@ import { Reducer } from "redux";
 import { SongState, SongsActionTypes, SET_SONGS } from "./types";
 
 const initialState: SongState = {
-  songs: []
+  songs: [],
 };
 
-export const songsReducer: Reducer<SongState, SongsActionTypes> = (state = initialState, action) => {
+export const songsReducer: Reducer<SongState, SongsActionTypes> = (state = initialState, action): SongState => {
   switch (action.type) {
     case SET_SONGS:
       return { ...state, songs: [...action.payload] };

@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { MapStateToProps, MapDispatchToProps, connect } from "react-redux";
 
-import { AppState } from "../../store";
-import { setSongs } from "../../store/songs/actions";
-import { Song } from "../../store/songs/types";
-import { fetchSongs } from "../../api";
-import SongList from "../../components/song-list/SongList";
+import { AppState } from "../store";
+import { setSongs } from "../store/songs/actions";
+import { Song } from "../store/songs/types";
+import { fetchSongs } from "../api";
+import SongList from "../components/song-list/SongList";
 
 interface StateProps {
   songs: Song[];
@@ -35,11 +35,11 @@ const Songs: React.FC<Props> = ({ setSongs, songs }) => {
 };
 
 const mapStateToProps: MapStateToProps<StateProps, OwnProps, AppState> = ({ songs: { songs } }) => ({
-  songs
+  songs,
 });
 
 const mapDispatchToProps: MapDispatchToProps<DispatchProps, OwnProps> = dispatch => ({
-  setSongs: songs => dispatch(setSongs(songs))
+  setSongs: songs => dispatch(setSongs(songs)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Songs);

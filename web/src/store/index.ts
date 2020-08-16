@@ -3,10 +3,12 @@ import { combineReducers, createStore } from "redux";
 import { authReducer } from "./auth/reducers";
 import { logIn } from "./auth/actions";
 import { songsReducer } from "./songs/reducers";
+import { playlistReducer } from "./playlists/reducers";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   songs: songsReducer,
+  playlists: playlistReducer,
 });
 
 export const store = createStore(rootReducer);

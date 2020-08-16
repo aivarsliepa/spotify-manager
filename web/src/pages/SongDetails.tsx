@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { MapStateToProps, MapDispatchToProps, connect } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import { AppState } from "../../store";
-import { fetchSongInfo } from "../../api";
+import { AppState } from "../store";
+import { fetchSongInfo } from "../api";
 
 interface StateProps {}
 
@@ -18,9 +18,7 @@ const SongDetails: React.FC<Props> = () => {
 
   useEffect(() => {
     if (songId) {
-      fetchSongInfo(songId)
-        .then(console.log)
-        .catch(console.error);
+      fetchSongInfo(songId).then(console.log).catch(console.error);
     }
   });
 
