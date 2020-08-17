@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { MapStateToProps, MapDispatchToProps, connect } from "react-redux";
+import { MapStateToProps, MapDispatchToProps, connect, ConnectedProps } from "react-redux";
 
 import { AppState } from "../../store";
 import { logIn } from "../../store/auth/actions";
@@ -12,7 +12,7 @@ interface DispatchProps {
 
 interface OwnProps {}
 
-type Props = StateProps & DispatchProps & OwnProps;
+type Props = ConnectedProps<typeof connector> & OwnProps;
 
 const Shell: React.FC<Props> = ({ logIn, children }) => {
   useEffect(() => {
@@ -30,7 +30,8 @@ const Shell: React.FC<Props> = ({ logIn, children }) => {
 const mapStateToProps: MapStateToProps<StateProps, OwnProps, AppState> = state => ({});
 
 const mapDispatchToProps: MapDispatchToProps<DispatchProps, OwnProps> = dispatch => ({
-  logIn: jwt => dispatch(logIn(jwt))
+  logIn: jwt => dispatch(logIn(jwt)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Shell);
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(Shell);

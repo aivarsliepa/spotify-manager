@@ -18,11 +18,11 @@ const SongDetails: React.FC<Props> = () => {
 
   useEffect(() => {
     if (songId) {
+      // TODO error handling
       fetchSongInfo(songId).then(console.log).catch(console.error);
     }
-  });
+  }, [songId]);
 
-  console.log("songId", songId);
   return <div>SongDetails works!</div>;
 };
 

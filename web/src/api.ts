@@ -13,18 +13,22 @@ const getRequest = (url: string) =>
     },
   });
 
-// TODO shared types
 export const fetchSongs = async (): Promise<SharedTypes.GetSongsResponse> => {
   const res = await getRequest(`${API_ROOT}/get-all-songs`);
   return await res.json();
 };
 
-export const fetchSongInfo = async (id: string) => {
-  const res = await getRequest(`${API_ROOT}/songInfo/${id}`);
+export const fetchSongInfo = async (songId: string) => {
+  const res = await getRequest(`${API_ROOT}/songInfo/${songId}`);
   return await res.json();
 };
 
 export const fetchPlaylists = async (): Promise<SharedTypes.GetPlaylistsResponse> => {
   const res = await getRequest(`${API_ROOT}/playlists`);
+  return await res.json();
+};
+
+export const fetchSongsForPlaylist = async (playlistId: string): Promise<SharedTypes.GetSongsResponse> => {
+  const res = await getRequest(`${API_ROOT}/playlists/${playlistId}`);
   return await res.json();
 };

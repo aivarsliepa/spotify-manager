@@ -15,7 +15,7 @@ import { getSpotifyCallback } from "./controllers/auth";
 import { getSync } from "./controllers/sync";
 import { spotifyAuth, jwtAuth } from "./passport-setup";
 import { getMutlipleSongsInfo, getSingleSongInfo, getSongs, getPlaySong } from "./controllers/tracks";
-import { getAllPlaylists } from "./controllers/playlists";
+import { getAllPlaylists, getAllSongsForPlaylist } from "./controllers/playlists";
 
 const app = express();
 
@@ -43,5 +43,6 @@ app.get("/get-all-songs", jwtAuth, getSongs);
 app.get("/play-song/:songId", jwtAuth, getPlaySong);
 
 app.get("/playlists", jwtAuth, getAllPlaylists);
+app.get("/playlists/:playlistId", jwtAuth, getAllSongsForPlaylist);
 
 export default app;

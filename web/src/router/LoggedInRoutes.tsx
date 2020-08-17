@@ -5,6 +5,7 @@ import Main from "../pages/Main";
 import Songs from "../pages/Songs";
 import Playlists from "../pages/Playlists";
 import SongDetails from "../pages/SongDetails";
+import PlaylistDetails from "../pages/PlaylistDetails";
 
 const LoggedInRoutes: React.FC = () => (
   <Switch>
@@ -12,6 +13,7 @@ const LoggedInRoutes: React.FC = () => (
     <Route exact path="/songs" component={Songs} />
     <Route exact path="/songs/:songId" component={SongDetails} />
     <Route exact path="/playlists" component={Playlists} />
+    <Route exact path="/playlists/:playlistId" component={PlaylistDetails} />
     <Redirect to="/" />
   </Switch>
 );
