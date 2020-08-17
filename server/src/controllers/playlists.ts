@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import * as SharedTypes from "@aivarsliepa/shared";
 
 import { UserDocument } from "../models/User";
 import { getAccessToken, fetchPlaylistData } from "../spotify-service";
@@ -10,7 +11,7 @@ export const getAllPlaylists: RequestHandler = async (req, res) => {
     const token = await getAccessToken(user);
     const playlists = await fetchPlaylistData(token);
 
-    const resBody: ResponseTypes.GetPlaylistsResponse = { playlists };
+    const resBody: SharedTypes.GetPlaylistsResponse = { playlists };
     res.json(resBody);
   } catch (error) {
     console.error("error getting song info", error);
