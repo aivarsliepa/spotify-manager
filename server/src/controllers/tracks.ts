@@ -8,10 +8,11 @@ export const getMutlipleSongsInfo: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
 
   const { ids } = req.query;
+  // TODO have a better handling of query strings, etc.. (probably some utility function to extract them)
 
   try {
     const token = await getAccessToken(user);
-    const data = await fetchSongInfo(token, ids);
+    const data = await fetchSongInfo(token, String(ids));
 
     res.json(data);
   } catch (error) {
@@ -43,7 +44,10 @@ export const getSingleSongInfo: RequestHandler = async (req, res) => {
  */
 export const getSongs: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
-  const { limit = 50, offset = 0 } = req.query;
+  let { limit = 50, offset = 0 } = req.query;
+  // TODO have a better handling of query strings, etc.. (probably some utility function to extract them)
+  limit = Number(limit);
+  offset = Number(offset);
   const songs = [...user.songs.values()].slice(offset, offset + limit);
 
   const ids: string = songs.map(song => song.spotifyId).join(",");
