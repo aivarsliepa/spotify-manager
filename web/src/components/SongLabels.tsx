@@ -37,7 +37,7 @@ class SongLabels extends Component<Props, State> {
   private submitNewLabel = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { labels, spotifyId } = this.props.song;
-    const request = api.changeLabels(spotifyId, [...labels, this.state.newLabel]);
+    const request = api.changeLabels(spotifyId, [...new Set([...labels, this.state.newLabel])]);
     this.setState({ newLabel: "" });
     await request;
     // TODO: error handling
