@@ -1,21 +1,22 @@
-import { combineReducers, createStore } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 
-import { authReducer } from "./auth/reducers";
-import { logIn } from "./auth/actions";
-import { songsReducer } from "./songs/reducers";
-import { playlistReducer } from "./playlists/reducers";
+import authReducer, { login } from "./authSlice";
+import songsReducer from "./songsSlice";
+import playlistsReducer from "./playlistsSlice";
 
-const rootReducer = combineReducers({
-  auth: authReducer,
-  songs: songsReducer,
-  playlists: playlistReducer,
+export const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    songs: songsReducer,
+    playlists: playlistsReducer,
+    // [showsApi.reducerPath]: showsApi.reducer
+  },
+  // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(showsApi.middleware),
 });
-
-export const store = createStore(rootReducer);
 
 const storedJwt = localStorage.getItem("jwt");
 if (storedJwt) {
-  store.dispatch(logIn(storedJwt));
+  store.dispatch(login(storedJwt));
 }
 
 window.addEventListener("beforeunload", () => {
@@ -27,4 +28,5 @@ window.addEventListener("beforeunload", () => {
   }
 });
 
-export type AppState = ReturnType<typeof rootReducer>;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

@@ -1,31 +1,20 @@
 import React, { useEffect } from "react";
-import { MapStateToProps, MapDispatchToProps, connect } from "react-redux";
 
-import { AppState } from "../store";
 import { fetchPlaylists } from "../api";
-import { setPlaylists } from "../store/playlists/actions";
-import { Playlist } from "../store/playlists/types";
 import PlaylistList from "../components/playlist/PlaylistList";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { selectPlaylists, setPlaylists } from "../store/playlistsSlice";
 
-interface StateProps {
-  playlists: Playlist[];
-}
+const Songs: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const playlists = useAppSelector(selectPlaylists);
 
-interface DispatchProps {
-  setPlaylists: typeof setPlaylists;
-}
-
-interface OwnProps {}
-
-type Props = StateProps & DispatchProps & OwnProps;
-
-const Songs: React.FC<Props> = ({ setPlaylists, playlists }) => {
   useEffect(() => {
     // TODO: error handling
     fetchPlaylists()
-      .then(({ playlists }) => setPlaylists(playlists))
+      .then(({ playlists }) => dispatch(setPlaylists(playlists)))
       .catch(console.log);
-  }, [setPlaylists]);
+  }, [dispatch]);
 
   return (
     <div>
@@ -34,12 +23,4 @@ const Songs: React.FC<Props> = ({ setPlaylists, playlists }) => {
   );
 };
 
-const mapStateToProps: MapStateToProps<StateProps, OwnProps, AppState> = ({ playlists: { playlists } }) => ({
-  playlists,
-});
-
-const mapDispatchToProps: MapDispatchToProps<DispatchProps, OwnProps> = dispatch => ({
-  setPlaylists: playlists => dispatch(setPlaylists(playlists)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Songs);
+export default Songs;

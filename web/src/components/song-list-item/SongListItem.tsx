@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 
-import { Song } from "../../store/songs/types";
+import { Song } from "../../store/songsSlice";
 import SongTitle from "../SongTitle";
 
 interface Props {
@@ -10,9 +10,10 @@ interface Props {
 
 const SongListItem: React.FC<Props> = props => {
   const history = useHistory();
+  const onClickHandler = useCallback(() => history.push(`/songs/${props.song.spotifyId}`), [history, props.song.spotifyId]);
 
   return (
-    <li onClick={() => history.push(`/songs/${props.song.spotifyId}`)}>
+    <li onClick={onClickHandler}>
       <SongTitle song={props.song} />
     </li>
   );

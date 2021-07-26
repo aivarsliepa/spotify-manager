@@ -1,47 +1,40 @@
-import React, { Component } from "react";
+import React, { useCallback, useState } from "react";
 
-import { Song } from "../store/songs/types";
 import LabelBadge from "./LabelBadge";
 import * as api from "../api";
+import { Song } from "../store/songsSlice";
 
 interface Props {
   song: Song;
 }
 
-interface State {
-  newLabel: string;
-}
+const SongLabels: React.FC<Props> = ({ song }) => {
+  const [newLabel, setNewLabel] = useState("");
 
-// TODO: FC component
-class SongLabels extends Component<Props, State> {
-  state = {
-    newLabel: "",
-  };
+  const submitNewLabel = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const { labels, spotifyId } = song;
+      const request = api.changeLabels(spotifyId, [...new Set([...labels, newLabel])]);
+      setNewLabel("");
+      await request;
+      // TODO: error handling
+      // TODO: optimistic update
+    },
+    [song, setNewLabel, newLabel]
+  );
 
-  render() {
-    const labels = this.props.song.labels.map(label => <LabelBadge labelName={label} key={label} />);
-    return (
-      <div>
-        {labels}
-        <form onSubmit={this.submitNewLabel}>
-          <input value={this.state.newLabel} onChange={this.onNewLabelChange} />
-        </form>
-      </div>
-    );
-  }
+  const onChangeHandler = useCallback((event: React.ChangeEvent<HTMLInputElement>) => setNewLabel(event.target.value), [setNewLabel]);
 
-  private onNewLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newLabel: event.target.value });
-  };
-
-  private submitNewLabel = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const { labels, spotifyId } = this.props.song;
-    const request = api.changeLabels(spotifyId, [...new Set([...labels, this.state.newLabel])]);
-    this.setState({ newLabel: "" });
-    await request;
-    // TODO: error handling
-  };
-}
+  const labels = song.labels.map(label => <LabelBadge labelName={label} key={label} />);
+  return (
+    <div>
+      {labels}
+      <form onSubmit={submitNewLabel}>
+        <input value={newLabel} onChange={onChangeHandler} />
+      </form>
+    </div>
+  );
+};
 
 export default SongLabels;

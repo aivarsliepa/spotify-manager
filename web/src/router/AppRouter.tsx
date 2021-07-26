@@ -1,28 +1,22 @@
 import React from "react";
-import { MapStateToProps, connect } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
-import { AppState } from "../store";
 import Shell from "../components/shell/Shell";
 import Header from "../components/header/Header";
 import LoggedInRoutes from "./LoggedInRoutes";
 import LoggedOutRoutes from "./LoggedOutRoutes";
+import { useAppSelector } from "../store/hooks";
+import { selectLoggedIn } from "../store/authSlice";
 
-interface StateProps {
-  loggedIn: boolean;
-}
+const AppRouter: React.FC = () => {
+  const loggedIn = useAppSelector(selectLoggedIn);
 
-interface OwnProps {}
+  return (
+    <Shell>
+      <Header />
+      <BrowserRouter>{loggedIn ? <LoggedInRoutes /> : <LoggedOutRoutes />}</BrowserRouter>
+    </Shell>
+  );
+};
 
-type Props = StateProps & OwnProps;
-
-const AppRouter: React.FC<Props> = props => (
-  <Shell>
-    <Header />
-    <BrowserRouter>{props.loggedIn ? <LoggedInRoutes /> : <LoggedOutRoutes />}</BrowserRouter>
-  </Shell>
-);
-
-const mapStateToProps: MapStateToProps<StateProps, OwnProps, AppState> = ({ auth: { loggedIn } }) => ({ loggedIn });
-
-export default connect(mapStateToProps)(AppRouter);
+export default AppRouter;

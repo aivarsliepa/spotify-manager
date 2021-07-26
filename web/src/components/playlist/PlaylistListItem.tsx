@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 
-import { Playlist } from "../../store/playlists/types";
+import { Playlist } from "../../store/playlistsSlice";
 
 interface Props {
   playlist: Playlist;
@@ -9,8 +9,9 @@ interface Props {
 
 const SongListItem: React.FC<Props> = props => {
   const history = useHistory();
+  const onClickHandler = useCallback(() => history.push(`/playlists/${props.playlist.spotifyId}`), [history, props.playlist.spotifyId]);
 
-  return <li onClick={() => history.push(`/playlists/${props.playlist.spotifyId}`)}>{`${props.playlist.name}`}</li>;
+  return <li onClick={onClickHandler}>{`${props.playlist.name}`}</li>;
 };
 
 export default SongListItem;
