@@ -128,7 +128,6 @@ export async function playSongs(token: string, uris: string[]): Promise<void> {
   // TODO: try if RETRY AFTER
   console.log(res.status);
   console.log(res.statusText);
-  // console.log(await res.json());
 }
 
 export async function fetchAllFromAPI<T extends { total: number }>(

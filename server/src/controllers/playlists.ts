@@ -14,7 +14,7 @@ export const getAllPlaylists: RequestHandler = async (req, res) => {
     const resBody: SharedTypes.GetPlaylistsResponse = { playlists };
     res.json(resBody);
   } catch (error) {
-    console.error("error getting song info", error);
+    console.error("[getAllPlaylists] error getting song info", error);
     res.status(500).send();
   }
 };
@@ -26,11 +26,15 @@ export const getAllSongsForPlaylist: RequestHandler = async (req, res) => {
   try {
     const token = await getAccessToken(user);
     const songs = await fetchAllSongsForPlaylist(token, playlistId);
+    const populatedSongs = songs.map(song => {
+      song.labels = user.songs.get(song.spotifyId).labels;
+      return song;
+    });
 
-    const resBody: SharedTypes.GetSongsResponse = { songs };
+    const resBody: SharedTypes.GetSongsResponse = { songs: populatedSongs };
     res.json(resBody);
   } catch (error) {
-    console.error("error getting song info", error);
+    console.error("[getAllSongsForPlaylist] error getting song info", error);
     res.status(500).send();
   }
 };

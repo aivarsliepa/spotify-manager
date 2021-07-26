@@ -12,12 +12,12 @@ export interface UserData {
   spotifyToken: string;
   spotifyRefreshToken: string;
   spotifyTokenExpires: Date;
-  songs: SongData[];
+  songs: Map<string /* spotifyId as key */, SongData>;
 }
 
 export type UserDocument = Omit<UserData, "songs"> &
   Document & {
-    songs: SongDocument[];
+    songs: Map<string /* spotifyId as key */, SongDocument>;
   };
 
 const userSchema = new Schema({
@@ -25,12 +25,13 @@ const userSchema = new Schema({
   spotifyToken: { required: true, type: String },
   spotifyRefreshToken: { required: true, type: String },
   spotifyTokenExpires: { required: true, type: Date },
-  songs: [
-    {
+  songs: {
+    type: Map, // spotifyId as key
+    of: {
       spotifyId: String,
       labels: [String],
     },
-  ],
+  },
 });
 
 const User = model<UserDocument>("User", userSchema);

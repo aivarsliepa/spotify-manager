@@ -7,7 +7,7 @@ import { plusSeconds } from "./utils";
 
 const jwtOpts: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.SECRET_OR_KEY
+  secretOrKey: process.env.SECRET_OR_KEY,
 };
 
 const verifyCallback: VerifyCallback = async (payload, done) => {
@@ -25,15 +25,16 @@ const jwtStrategy = new JwtStrategy(jwtOpts, verifyCallback);
 const spotifyOpts = {
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: process.env.SERVER_URI + "/auth/spotify/callback"
+  callbackURL: process.env.SERVER_URI + "/auth/spotify/callback",
 };
 
+// TODO: search for spotify startegy types
 const spotifyCallback = async (
   accessToken: string,
   refreshToken: string,
-  expiresIn: any,
-  profile: any,
-  done: Function
+  expiresIn: number,
+  profile: { id: string },
+  done: (error: any, user: any) => void
 ) => {
   const spotifyTokenExpires = plusSeconds(new Date(), expiresIn);
 
@@ -41,7 +42,7 @@ const spotifyCallback = async (
   const data = {
     spotifyRefreshToken: refreshToken,
     spotifyToken: accessToken,
-    spotifyTokenExpires
+    spotifyTokenExpires,
   };
 
   try {
@@ -50,7 +51,8 @@ const spotifyCallback = async (
     if (user === null) {
       user = await User.create({
         ...query,
-        ...data
+        ...data,
+        songs: {},
       });
     }
 
@@ -68,6 +70,6 @@ passport.use(spotifyStrategy);
 
 export const spotifyAuth = passport.authenticate("spotify", {
   session: false,
-  scope: ["user-library-read", "playlist-read-private", "user-modify-playback-state"]
+  scope: ["user-library-read", "playlist-read-private", "user-modify-playback-state"],
 });
 export const jwtAuth = passport.authenticate("jwt", { session: false });

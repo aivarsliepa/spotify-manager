@@ -34,10 +34,10 @@
     "node-fetch": "^2.6.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
-    "passport-spotify": "^1.1.0",
-    "@aivarsliepa/shared": "file:../shared"
+    "passport-spotify": "^1.1.0"
   },
   "devDependencies": {
+    "@aivarsliepa/shared": "file:../shared",
     "@types/body-parser": "^1.17.1",
     "@types/compression": "^1.0.1",
     "@types/cors": "^2.8.6",

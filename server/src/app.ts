@@ -14,7 +14,8 @@ import "./passport-setup";
 import { getSpotifyCallback } from "./controllers/auth";
 import { getSync } from "./controllers/sync";
 import { spotifyAuth, jwtAuth } from "./passport-setup";
-import { getMutlipleSongsInfo, getSingleSongInfo, getSongs, getPlaySong } from "./controllers/tracks";
+// import { getMutlipleSongsInfo, getSingleSongInfo } from "./controllers/tracks";
+import { getSongs, getPlaySong, postSong } from "./controllers/tracks";
 import { getAllPlaylists, getAllSongsForPlaylist } from "./controllers/playlists";
 
 const app = express();
@@ -34,8 +35,8 @@ app.get("/auth/spotify/callback", spotifyAuth, getSpotifyCallback);
 app.get("/sync", jwtAuth, getSync);
 
 // TODO: to be changed
-app.get("/songInfo", jwtAuth, getMutlipleSongsInfo);
-app.get("/songInfo/:songId", jwtAuth, getSingleSongInfo);
+// app.get("/songInfo", jwtAuth, getMutlipleSongsInfo); // TODO: this is not used ?
+// app.get("/songInfo/:songId", jwtAuth, getSingleSongInfo); // TODO: not needed ?
 
 // TODO: this temporary route for testing/dev
 app.get("/get-all-songs", jwtAuth, getSongs);
@@ -44,5 +45,7 @@ app.get("/play-song/:songId", jwtAuth, getPlaySong);
 
 app.get("/playlists", jwtAuth, getAllPlaylists);
 app.get("/playlists/:playlistId", jwtAuth, getAllSongsForPlaylist);
+
+app.post("/song/:songId", jwtAuth, postSong);
 
 export default app;

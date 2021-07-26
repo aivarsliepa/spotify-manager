@@ -15,7 +15,7 @@ export const getMutlipleSongsInfo: RequestHandler = async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error("error getting song info", error);
+    console.error("[getMutlipleSongsInfo] error getting song info", error);
     res.status(500).send();
   }
 };
@@ -33,7 +33,7 @@ export const getSingleSongInfo: RequestHandler = async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error("error getting song info", error);
+    console.error("[getSingleSongInfo] error getting song info", error);
     res.status(500).send();
   }
 };
@@ -44,7 +44,7 @@ export const getSingleSongInfo: RequestHandler = async (req, res) => {
 export const getSongs: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
   const { limit = 50, offset = 0 } = req.query;
-  const songs = user.songs.slice(offset, offset + limit);
+  const songs = [...user.songs.values()].slice(offset, offset + limit);
 
   const ids: string = songs.map(song => song.spotifyId).join(",");
 
@@ -71,7 +71,7 @@ export const getSongs: RequestHandler = async (req, res) => {
     const resBody: SharedTypes.GetSongsResponse = { songs: songRes };
     res.json(resBody);
   } catch (error) {
-    console.error("error getting song info", error);
+    console.error("[getSongs] error getting song info", error);
     res.status(500).send();
   }
 };
@@ -91,7 +91,39 @@ export const getPlaySong: RequestHandler = async (req, res) => {
     await playSongs(token, [song.uri]);
     res.send();
   } catch (error) {
-    console.error("error getting song info", error);
+    console.error("[getPlaySong] error getting song info", error);
+    res.status(500).send();
+  }
+};
+
+/**
+ * Save labels for song
+ */
+export const postSong: RequestHandler = async (req, res) => {
+  const user = req.user as UserDocument;
+  const { songId } = req.params;
+  const { labels } = req.body;
+  if (!labels) {
+    console.error("[postSong] no labels provided");
+    return res.status(400).send();
+  }
+
+  try {
+    // TODO: can be optimized by using mongo driver for update
+    // for (const song in user.songs) {
+
+    // }
+
+    user.songs.forEach(song => {
+      if (song.spotifyId === songId) {
+        song.labels = labels;
+      }
+    });
+
+    await user.save();
+    res.send();
+  } catch (error) {
+    console.error("[postSong] error updating labels", error);
     res.status(500).send();
   }
 };
