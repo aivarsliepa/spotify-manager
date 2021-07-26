@@ -21,7 +21,7 @@ interface OwnProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 const PlaylistDetails: React.FC<Props> = ({ setSongs, songs }) => {
-  const { playlistId } = useParams();
+  const { playlistId } = useParams<{ playlistId: string }>();
 
   useEffect(() => {
     if (playlistId) {
