@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Playlist } from "../../store/playlistsSlice";
+import { Playlist } from "../../../../shared";
 import PlaylistListItem from "./PlaylistListItem";
 
 interface Props {

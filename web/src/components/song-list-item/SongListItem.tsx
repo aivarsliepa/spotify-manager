@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 
-import { Song } from "../../store/songsSlice";
+import { Song } from "../../../../shared";
 import SongTitle from "../SongTitle";
 
 interface Props {

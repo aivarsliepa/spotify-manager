@@ -1,14 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from ".";
-
-// TODO maybe different place to define this?
-export interface Song {
-  spotifyId: string;
-  labels: string[];
-  name: string;
-  artists: string;
-}
+import { Song } from "../../../shared";
 
 interface SongState {
   songs: Song[];

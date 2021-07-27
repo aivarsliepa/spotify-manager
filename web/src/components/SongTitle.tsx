@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Song } from "../store/songsSlice";
+import { Song } from "../../../shared";
 
 interface Props {
   song: Song;

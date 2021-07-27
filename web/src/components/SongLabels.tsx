@@ -2,8 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import LabelBadge from "./LabelBadge";
 import * as api from "../api";
-import { Song } from "../store/songsSlice";
-
+import { Song } from "../../../shared";
 interface Props {
   song: Song;
 }

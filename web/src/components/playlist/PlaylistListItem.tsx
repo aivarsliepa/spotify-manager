@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 
-import { Playlist } from "../../store/playlistsSlice";
+import { Playlist } from "../../../../shared";
 
 interface Props {
   playlist: Playlist;
