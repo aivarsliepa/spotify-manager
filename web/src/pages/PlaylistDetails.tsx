@@ -1,29 +1,21 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
-import { fetchSongsForPlaylist } from "../api";
 import SongList from "../components/song-list/SongList";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { selectSongs, setSongs } from "../store/songsSlice";
+import { useGetSongsByPlaylistIdQuery } from "../store/api";
 
 const PlaylistDetails: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const songs = useAppSelector(selectSongs);
-
   const { playlistId } = useParams<{ playlistId: string }>();
 
-  useEffect(() => {
-    if (playlistId) {
-      // TODO error handling
-      fetchSongsForPlaylist(playlistId)
-        .then(res => dispatch(setSongs(res.songs)))
-        .catch(console.error);
-    }
-  }, [playlistId, dispatch]);
+  const { data } = useGetSongsByPlaylistIdQuery(playlistId);
+  if (!data) {
+    // TODO
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <SongList songs={songs} />
+      <SongList songs={data.songs} />
     </div>
   );
 };

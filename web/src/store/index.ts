@@ -1,17 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import authReducer, { login, selectJWT, selectLoggedIn } from "./authSlice";
-import songsReducer from "./songsSlice";
-import playlistsReducer from "./playlistsSlice";
+import api from "./api";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    songs: songsReducer,
-    playlists: playlistsReducer,
-    // [showsApi.reducerPath]: showsApi.reducer
+    [api.reducerPath]: api.reducer,
   },
-  // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(showsApi.middleware),
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(api.middleware),
 });
 
 const storedJwt = localStorage.getItem("jwt");

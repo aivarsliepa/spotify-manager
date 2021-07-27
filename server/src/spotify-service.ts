@@ -168,7 +168,8 @@ function mapSpotifyTrackToSong({ track }: { track: SpotifyApi.TrackObjectFull })
   };
 }
 
-function mapSpotifyTrackToSharedSong({ track }: { track: SpotifyApi.TrackObjectFull }): SharedTypes.Song {
+export function mapSpotifyTrackToSharedSong({ track }: { track: SpotifyApi.TrackObjectFull }): SharedTypes.Song {
   const artists = track.artists.map(artist => artist.name).join(", ");
+  // TODO : accept and populate labels?
   return { labels: [], spotifyId: track.linked_from?.id ?? track.id, name: track.name, artists };
 }

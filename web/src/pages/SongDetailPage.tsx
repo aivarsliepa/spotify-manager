@@ -2,6 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 
 import SongDetails from "../components/SongDetails";
+import { useGetSongByIdQuery } from "../store/api";
 
 interface URLParams {
   songId: string;
@@ -10,7 +11,12 @@ interface URLParams {
 const SongDetailPage: React.FC = () => {
   const { songId } = useParams<URLParams>();
 
-  return <SongDetails songId={songId} />;
+  const { data } = useGetSongByIdQuery(songId);
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
+  return <SongDetails song={data} />;
 };
 
 export default SongDetailPage;

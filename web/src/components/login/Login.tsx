@@ -1,6 +1,6 @@
 import React from "react";
 
-import { LOGIN_URL } from "../../api";
+import { LOGIN_URL } from "../../store/api";
 
 const spotifyLogin = () => {
   window.location.href = LOGIN_URL;

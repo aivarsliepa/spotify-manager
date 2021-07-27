@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import * as SharedTypes from "@aivarsliepa/shared";
 
 import { UserDocument, SongData } from "../models/User";
-import { getAccessToken, fetchSongInfo, playSongs } from "../spotify-service";
+import { getAccessToken, fetchSongInfo, playSongs, mapSpotifyTrackToSharedSong } from "../spotify-service";
 
 export const getMutlipleSongsInfo: RequestHandler = async (req, res) => {
   const user = req.user as UserDocument;
@@ -31,8 +31,18 @@ export const getSingleSongInfo: RequestHandler = async (req, res) => {
   try {
     const token = await getAccessToken(user);
     const data = await fetchSongInfo(token, songId);
+    const track = data.tracks[0];
+    if (!track) {
+      return res.status(404).send();
+    }
 
-    res.json(data);
+    const song = mapSpotifyTrackToSharedSong({ track });
+    const storedSong = user.songs.get(songId);
+    if (storedSong) {
+      song.labels = storedSong.labels;
+    }
+
+    res.json(song);
   } catch (error) {
     console.error("[getSingleSongInfo] error getting song info", error);
     res.status(500).send();

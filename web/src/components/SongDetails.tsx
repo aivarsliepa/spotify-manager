@@ -1,27 +1,22 @@
-import React, { useMemo } from "react";
+import React, { useCallback } from "react";
 
 import SongTitle from "./SongTitle";
-import { playSong } from "../api";
 import SongLabels from "./SongLabels";
-import { useAppSelector } from "../store/hooks";
-import { selectSongs } from "../store/songsSlice";
+import { Song } from "../../../shared";
+import { useAppDispatch } from "../store/hooks";
+import { playSong } from "../store/api";
 
 interface Props {
-  songId?: string;
+  song: Song;
 }
 
-const SongDetails: React.FC<Props> = props => {
-  const songs = useAppSelector(selectSongs);
-  const song = useMemo(() => songs.find(song => song.spotifyId === props.songId), [songs, props.songId]);
+const SongDetails: React.FC<Props> = ({ song }) => {
+  const dispatch = useAppDispatch();
 
-  if (!song) {
-    return null;
-  }
-
-  // TODO: useCallback? (behind condition :/ )
-  const onClickHandler = () => {
-    playSong(song.spotifyId);
-  };
+  const onClickHandler = useCallback(() => {
+    dispatch(playSong(song.spotifyId));
+    // TODO: error handling
+  }, [dispatch, song.spotifyId]);
 
   return (
     <div>
