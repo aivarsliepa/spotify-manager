@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import authReducer, { login } from "./authSlice";
+import authReducer, { login, selectJWT, selectLoggedIn } from "./authSlice";
 import songsReducer from "./songsSlice";
 import playlistsReducer from "./playlistsSlice";
 
@@ -20,8 +20,10 @@ if (storedJwt) {
 }
 
 window.addEventListener("beforeunload", () => {
-  const { jwt, loggedIn } = store.getState().auth;
+  const loggedIn = selectLoggedIn(store.getState());
+
   if (loggedIn) {
+    const jwt = selectJWT(store.getState());
     localStorage.setItem("jwt", jwt);
   } else {
     localStorage.removeItem("jwt");

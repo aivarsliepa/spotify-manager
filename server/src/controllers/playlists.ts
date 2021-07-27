@@ -27,7 +27,10 @@ export const getAllSongsForPlaylist: RequestHandler = async (req, res) => {
     const token = await getAccessToken(user);
     const songs = await fetchAllSongsForPlaylist(token, playlistId);
     const populatedSongs = songs.map(song => {
-      song.labels = user.songs.get(song.spotifyId).labels;
+      const storedSong = user.songs.get(song.spotifyId);
+      if (storedSong) {
+        song.labels = storedSong.labels;
+      }
       return song;
     });
 
