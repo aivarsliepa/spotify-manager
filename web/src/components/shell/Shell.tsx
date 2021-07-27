@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
+import Box from "@material-ui/core/Box";
+import Container from "@material-ui/core/Container";
 
 import { login } from "../../store/authSlice";
 import { useAppDispatch } from "../../store/hooks";
+import Header, { DrawerHeader } from "../header/Header";
 
-const Shell: React.FC = ({ children }) => {
+const useAuth = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -14,8 +17,22 @@ const Shell: React.FC = ({ children }) => {
       dispatch(login(jwt));
     }
   }, [dispatch]);
+};
 
-  return <div>{children}</div>;
+const Shell: React.FC = ({ children }) => {
+  useAuth();
+
+  return (
+    <>
+      <Header />
+      <Container>
+        <DrawerHeader /> {/* Pushes content below header */}
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          {children}
+        </Box>
+      </Container>
+    </>
+  );
 };
 
 export default Shell;

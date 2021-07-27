@@ -1,10 +1,7 @@
 import React from "react";
 import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
 
 import Shell from "../components/shell/Shell";
-import Header from "../components/header/Header";
 import { useAppSelector } from "../store/hooks";
 import { selectLoggedIn } from "../store/authSlice";
 import Main from "../pages/Main";
@@ -36,17 +33,11 @@ const AppRouter: React.FC = () => {
   const loggedIn = useAppSelector(selectLoggedIn);
 
   return (
-    <Shell>
-      <BrowserRouter>
-        <Header />
-        <Container>
-          <Box paddingY={3}>
-            <Switch>{loggedIn ? <LoggedInRoutes /> : <LoggedOutRoutes />}</Switch>
-          </Box>
-        </Container>
-      </BrowserRouter>
-      {/* Footer ? */}
-    </Shell>
+    <BrowserRouter>
+      <Shell>
+        <Switch>{loggedIn ? <LoggedInRoutes /> : <LoggedOutRoutes />}</Switch>
+      </Shell>
+    </BrowserRouter>
   );
 };
 
