@@ -1,13 +1,8 @@
 import React from "react";
-
-import Login from "../components/login/Login";
+import Typography from "@material-ui/core/Typography";
 
 const Index: React.FC = () => {
-  return (
-    <div>
-      <Login />
-    </div>
-  );
+  return <Typography>Sign in to use app.</Typography>;
 };
 
 export default Index;
