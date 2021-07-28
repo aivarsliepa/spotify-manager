@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
+import Toolbar from "@material-ui/core/Toolbar";
 
-import { login } from "../../store/authSlice";
-import { useAppDispatch } from "../../store/hooks";
+import { login, selectLoggedIn } from "../../store/authSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import Header from "../header/Header";
 import AppDrawer from "../AppDrawer";
 
@@ -22,13 +23,15 @@ const useAuth = () => {
 
 const Shell: React.FC = ({ children }) => {
   useAuth();
+  const isLoggedIn = useAppSelector(selectLoggedIn);
 
   return (
     <>
       <Header />
       <Container>
-        <AppDrawer />
+        {isLoggedIn && <AppDrawer />}
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Toolbar /> {/* To push down content from toolbar */}
           {children}
         </Box>
       </Container>

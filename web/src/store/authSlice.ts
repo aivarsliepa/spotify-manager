@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createSelector, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { RootState } from ".";
+import { deleteAllCookies } from "../utils";
 
 export interface AuthState {
   jwt: string;
@@ -10,6 +11,11 @@ const initialState: AuthState = {
   jwt: "",
 };
 
+export const logoutThunk = createAsyncThunk("auth/logout", async () => {
+  deleteAllCookies();
+  localStorage.removeItem("jwt");
+});
+
 export const slice = createSlice({
   name: "auth",
   initialState,
@@ -17,13 +23,15 @@ export const slice = createSlice({
     login(state, action: PayloadAction<string>) {
       state.jwt = action.payload;
     },
-    logout(state) {
+  },
+  extraReducers: builder => {
+    builder.addCase(logoutThunk.fulfilled, state => {
       state.jwt = "";
-    },
+    });
   },
 });
 
-export const { login, logout } = slice.actions;
+export const { login } = slice.actions;
 
 export const selectJWT = (state: RootState) => state.auth.jwt;
 

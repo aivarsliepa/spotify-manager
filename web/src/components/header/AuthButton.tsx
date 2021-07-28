@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import Button from "@material-ui/core/Button";
 
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { logout, selectLoggedIn } from "../../store/authSlice";
+import { logoutThunk, selectLoggedIn } from "../../store/authSlice";
 import { LOGIN_URL } from "../../store/api";
 
 const AuthButton: React.FC = () => {
@@ -11,7 +11,7 @@ const AuthButton: React.FC = () => {
 
   const onClickHandler = useCallback(() => {
     if (isLoggedIn) {
-      dispatch(logout());
+      dispatch(logoutThunk());
     } else {
       window.location.href = LOGIN_URL; // redirect to Spotify for auth
     }
