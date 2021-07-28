@@ -4,7 +4,8 @@ import Container from "@material-ui/core/Container";
 
 import { login } from "../../store/authSlice";
 import { useAppDispatch } from "../../store/hooks";
-import Header, { DrawerHeader } from "../header/Header";
+import Header from "../header/Header";
+import AppDrawer from "../AppDrawer";
 
 const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -26,7 +27,7 @@ const Shell: React.FC = ({ children }) => {
     <>
       <Header />
       <Container>
-        <DrawerHeader /> {/* Pushes content below header */}
+        <AppDrawer />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           {children}
         </Box>
