@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 
+import Spinner from "../components/atoms/Spinner";
 import SongDetails from "../components/SongDetails";
 import { useGetSongByIdQuery } from "../store/api";
 
@@ -13,7 +14,7 @@ const SongDetailPage: React.FC = () => {
 
   const { data } = useGetSongByIdQuery(songId);
   if (!data) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return <SongDetails song={data} />;

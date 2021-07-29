@@ -1,5 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import Spinner from "../components/atoms/Spinner";
 
 import SongList from "../components/song-list/SongList";
 import { useGetSongsByPlaylistIdQuery } from "../store/api";
@@ -9,8 +10,7 @@ const PlaylistDetails: React.FC = () => {
 
   const { data } = useGetSongsByPlaylistIdQuery(playlistId);
   if (!data) {
-    // TODO
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   return (

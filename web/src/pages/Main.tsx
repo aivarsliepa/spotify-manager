@@ -1,10 +1,10 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
 
 const Main: React.FC = () => {
   return (
     <div>
-      <NavLink to="/playlists">Playlists</NavLink>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti porro consequatur commodi. Laudantium quisquam eligendi rem,
+      obcaecati cumque sint dolorem natus ipsum, a, voluptate eum dignissimos minima aperiam harum culpa?
     </div>
   );
 };
