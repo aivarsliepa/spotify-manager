@@ -21,7 +21,7 @@ export default function NewLabelForm({ onSubmit }: Props) {
 
   return (
     <form onSubmit={submitNewLabel}>
-      <TextField sx={{ marginY: 2 }} label="Add label" variant="outlined" value={newLabel} onChange={onChangeHandler} size="small" />
+      <TextField sx={{ marginY: 2 }} label="Add label" value={newLabel} onChange={onChangeHandler} size="small" />
     </form>
   );
 }

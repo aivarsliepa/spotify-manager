@@ -7,10 +7,9 @@ import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
 
 interface Props {
   text: string;
-  onClick: () => void;
 }
 
-export default function LabelContentListItem({ text, onClick }: Props) {
+export default function LabelContentListItem({ text }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const theme = useTheme();
 
@@ -35,8 +34,8 @@ export default function LabelContentListItem({ text, onClick }: Props) {
 
   return (
     <ListItem onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} sx={style}>
-      <IconButton aria-label="delete">
-        {isHovered ? <DeleteForeverIcon color="error" onClick={onRemoveLabel} /> : <LabelIcon color="primary" />}
+      <IconButton aria-label="delete" onClick={isHovered ? onRemoveLabel : undefined}>
+        {isHovered ? <DeleteForeverIcon color="error" /> : <LabelIcon color="primary" />}
       </IconButton>
 
       <ListItemText primary={text} />
