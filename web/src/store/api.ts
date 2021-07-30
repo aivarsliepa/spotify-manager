@@ -36,10 +36,13 @@ const api = createApi({
     getSongById: builder.query<SharedTypes.Song, string>({
       query: songId => `songInfo/${songId}`,
     }),
+    getAllLabels: builder.query<SharedTypes.GetLabelsResponse, void>({
+      query: () => `labels`,
+    }),
   }),
 });
 
-export const { useGetAllSongsQuery, useGetPlaylistsQuery, useGetSongsByPlaylistIdQuery, useGetSongByIdQuery } = api;
+export const { useGetAllSongsQuery, useGetPlaylistsQuery, useGetSongsByPlaylistIdQuery, useGetSongByIdQuery, useGetAllLabelsQuery } = api;
 
 const getRequest = (url: string, jwt: string) =>
   fetch(url, {

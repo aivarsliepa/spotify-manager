@@ -1,6 +1,7 @@
 import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar } from "@material-ui/core";
 import MusicIcon from "@material-ui/icons/LibraryMusic";
 import ListIcon from "@material-ui/icons/List";
+import LabelIcon from "@material-ui/icons/Label";
 
 import { useHistory } from "react-router-dom";
 import { useCallback } from "react";
@@ -14,6 +15,7 @@ export default function AppDrawer() {
   const onHomeClick = useCallback(() => history.push("/"), [history]);
   const onPlaylistsClick = useCallback(() => history.push("/playlists"), [history]);
   const onSongsClick = useCallback(() => history.push("/songs"), [history]);
+  const onLabelsClick = useCallback(() => history.push("/labels"), [history]);
 
   return (
     <Drawer
@@ -47,6 +49,13 @@ export default function AppDrawer() {
               <MusicIcon />
             </ListItemIcon>
             <ListItemText primary="Songs" />
+          </ListItem>
+
+          <ListItem button onClick={onLabelsClick}>
+            <ListItemIcon>
+              <LabelIcon />
+            </ListItemIcon>
+            <ListItemText primary="Labels" />
           </ListItem>
         </List>
       </Box>

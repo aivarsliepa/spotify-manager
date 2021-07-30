@@ -17,6 +17,7 @@ import { spotifyAuth, jwtAuth } from "./passport-setup";
 // import { getMutlipleSongsInfo } from "./controllers/tracks";
 import { getSongs, getPlaySong, postSong, getSingleSongInfo } from "./controllers/tracks";
 import { getAllPlaylists, getAllSongsForPlaylist } from "./controllers/playlists";
+import { getAllLabels } from "./controllers/labels";
 
 const app = express();
 
@@ -47,5 +48,7 @@ app.get("/playlists", jwtAuth, getAllPlaylists);
 app.get("/playlists/:playlistId", jwtAuth, getAllSongsForPlaylist);
 
 app.post("/song/:songId", jwtAuth, postSong);
+
+app.get("/labels", jwtAuth, getAllLabels);
 
 export default app;

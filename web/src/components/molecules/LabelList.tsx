@@ -1,6 +1,6 @@
 import { Stack } from "@material-ui/core";
+import { Label } from "@aivarsliepa/shared";
 
-import { Label } from "../../types";
 import LabelBadge from "../atoms/LabelBadge";
 
 interface Props {

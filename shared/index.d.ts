@@ -17,3 +17,8 @@ export interface GetSongsResponse {
 export interface GetPlaylistsResponse {
   playlists: Playlist[];
 }
+export type Label = string;
+
+export interface GetLabelsResponse {
+  labels: Label[];
+}
