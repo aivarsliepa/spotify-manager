@@ -3,12 +3,12 @@ import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 import Shell from "../components/organisms/Shell";
 import { useAppSelector } from "../store/hooks";
 import { selectLoggedIn } from "../store/authSlice";
-import Main from "../components/pages/Main";
-import Songs from "../components/pages/Songs";
-import Playlists from "../components/pages/Playlists";
+import Main from "../components/pages/MainPage";
+import Songs from "../components/pages/SongsPage";
+import Playlists from "../components/pages/PlaylistsPage";
 import SongDetailPage from "../components/pages/SongDetailPage";
-import PlaylistDetails from "../components/pages/PlaylistDetails";
-import Index from "../components/pages/Index";
+import PlaylistDetails from "../components/pages/PlaylistDetailsPage";
+import Index from "../components/pages/IndexPage";
 
 const LoggedInRoutes = () => (
   <>
