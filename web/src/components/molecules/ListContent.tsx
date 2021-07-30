@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, CardContent, List, Typography } from "@material-ui/core";
 import { WithChildren } from "../../types";
 

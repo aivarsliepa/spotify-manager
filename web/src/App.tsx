@@ -1,11 +1,11 @@
 import React from "react";
 import { Provider } from "react-redux";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { CssBaseline } from "@material-ui/core";
 
 import AppRouter from "./router/AppRouter";
 import { store } from "./store";
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <React.StrictMode>
       <CssBaseline />
@@ -14,6 +14,4 @@ const App: React.FC = () => {
       </Provider>
     </React.StrictMode>
   );
-};
-
-export default App;
+}

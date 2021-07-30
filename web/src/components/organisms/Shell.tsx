@@ -1,12 +1,11 @@
-import React, { useEffect } from "react";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
-import Toolbar from "@material-ui/core/Toolbar";
+import { useEffect } from "react";
+import { Box, Container, Toolbar } from "@material-ui/core";
 
 import { login, selectLoggedIn } from "../../store/authSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import Header from "../header/Header";
-import AppDrawer from "../AppDrawer";
+import Header from "../molecules/header/Header";
+import AppDrawer from "./AppDrawer";
+import { WithChildren } from "../../types";
 
 const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +20,7 @@ const useAuth = () => {
   }, [dispatch]);
 };
 
-const Shell: React.FC = ({ children }) => {
+export default function Shell({ children }: WithChildren) {
   useAuth();
   const isLoggedIn = useAppSelector(selectLoggedIn);
 
@@ -37,6 +36,4 @@ const Shell: React.FC = ({ children }) => {
       </Container>
     </>
   );
-};
-
-export default Shell;
+}

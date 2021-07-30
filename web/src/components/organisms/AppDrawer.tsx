@@ -1,16 +1,11 @@
-import Box from "@material-ui/core/Box";
-import Drawer from "@material-ui/core/Drawer";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
+import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar } from "@material-ui/core";
 import MusicIcon from "@material-ui/icons/LibraryMusic";
 import ListIcon from "@material-ui/icons/List";
+
 import { useHistory } from "react-router-dom";
 import { useCallback } from "react";
 
-import HomeIcon from "./icons/HomeIcon";
+import HomeIcon from "../atoms/icons/HomeIcon";
 
 const drawerWidth = 240;
 

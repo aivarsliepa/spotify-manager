@@ -1,11 +1,11 @@
-import React, { useCallback } from "react";
-import Button from "@material-ui/core/Button";
+import { useCallback } from "react";
+import { Button } from "@material-ui/core";
 
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { logoutThunk, selectLoggedIn } from "../../store/authSlice";
-import { LOGIN_URL } from "../../store/api";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { logoutThunk, selectLoggedIn } from "../../../store/authSlice";
+import { LOGIN_URL } from "../../../store/api";
 
-const AuthButton: React.FC = () => {
+export default function AuthButton() {
   const isLoggedIn = useAppSelector(selectLoggedIn);
   const dispatch = useAppDispatch();
 
@@ -22,6 +22,4 @@ const AuthButton: React.FC = () => {
       {isLoggedIn ? "Logout" : "Login"}
     </Button>
   );
-};
-
-export default AuthButton;
+}

@@ -1,12 +1,10 @@
-import React from "react";
+import { Typography } from "@material-ui/core";
 
-const Main: React.FC = () => {
+export default function Main() {
   return (
-    <div>
+    <Typography>
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti porro consequatur commodi. Laudantium quisquam eligendi rem,
       obcaecati cumque sint dolorem natus ipsum, a, voluptate eum dignissimos minima aperiam harum culpa?
-    </div>
+    </Typography>
   );
-};
-
-export default Main;
+}

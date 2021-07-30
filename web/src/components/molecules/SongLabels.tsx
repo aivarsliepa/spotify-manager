@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import { Song } from "../../../shared";
-import { useAppDispatch } from "../store/hooks";
-import { changeLabels, useGetSongByIdQuery } from "../store/api";
-import LabelList from "./molecules/LabelList";
-import NewLabelForm from "./atoms/NewLabelForm";
+import { Song } from "../../../../shared";
+import { useAppDispatch } from "../../store/hooks";
+import { changeLabels, useGetSongByIdQuery } from "../../store/api";
+import LabelList from "./LabelList";
+import NewLabelForm from "../atoms/NewLabelForm";
 
 interface Props {
   song: Song;

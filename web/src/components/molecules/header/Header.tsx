@@ -1,8 +1,7 @@
-import Box from "@material-ui/core/Box";
-import Toolbar from "@material-ui/core/Toolbar";
-import AppBar from "@material-ui/core/AppBar";
+import { AppBar, Box, Toolbar } from "@material-ui/core";
 
 import AuthButton from "./AuthButton";
+
 export default function Header() {
   return (
     <Box sx={{ display: "flex" }}>
