@@ -1,21 +1,29 @@
+import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@material-ui/core";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
+import WorkIcon from "@material-ui/icons/Work";
 
 import { Song } from "../../../../shared";
-import SongTitle from "../SongTitle";
+import { createSongName } from "../../utils";
 
 interface Props {
   song: Song;
 }
 
-const SongListItem: React.FC<Props> = props => {
+const SongListItem: React.FC<Props> = ({ song }) => {
   const history = useHistory();
-  const onClickHandler = useCallback(() => history.push(`/songs/${props.song.spotifyId}`), [history, props.song.spotifyId]);
+  const onClickHandler = useCallback(() => history.push(`/songs/${song.spotifyId}`), [history, song.spotifyId]);
 
   return (
-    <li onClick={onClickHandler}>
-      <SongTitle song={props.song} />
-    </li>
+    <ListItem button onClick={onClickHandler}>
+      <ListItemAvatar>
+        <Avatar>
+          {/* TODO: put small image */}
+          <WorkIcon />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText primary={createSongName(song)} />
+    </ListItem>
   );
 };
 

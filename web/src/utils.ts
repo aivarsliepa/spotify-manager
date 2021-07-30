@@ -1,3 +1,5 @@
+import { Song } from "../../shared";
+
 export function deleteAllCookies() {
   const cookies = document.cookie.split(";");
   for (const cookie of cookies) {
@@ -5,4 +7,7 @@ export function deleteAllCookies() {
     const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
   }
+}
+export function createSongName(song: Song) {
+  return `${song.name} - ${song.artists}`;
 }

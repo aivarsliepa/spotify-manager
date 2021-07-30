@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Song } from "../../../../shared";
+import ListContent from "../molecules/ListContent";
 import SongListItem from "../song-list-item/SongListItem";
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 const SongList: React.FC<Props> = props => {
   const songList = props.songs.map(song => <SongListItem song={song} key={song.spotifyId} />);
 
-  return <ul>{songList}</ul>;
+  return <ListContent header="Songs">{songList}</ListContent>;
 };
 
 export default SongList;
