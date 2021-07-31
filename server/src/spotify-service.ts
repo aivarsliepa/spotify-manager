@@ -2,17 +2,23 @@ import fetch from "node-fetch";
 import { URLSearchParams } from "url";
 import * as SharedTypes from "@aivarsliepa/shared";
 
-import { UserDocument, SongData } from "./models/User";
+import { UserDocument } from "./data/User";
 import { plusSeconds, createUrlWithParams, wait } from "./utils";
+import { trackToSpotifyIdObject, transformSpotifyTrackToData } from "./data/transformers";
+import { SpotifySongData } from "./data/Song";
 
-const api = {
+const apiURLs = Object.freeze({
   token: "https://accounts.spotify.com/api/token",
   myTracks: "https://api.spotify.com/v1/me/tracks",
   myPlaylists: "https://api.spotify.com/v1/me/playlists",
   tracks: "https://api.spotify.com/v1/tracks",
   play: "https://api.spotify.com/v1/me/player/play",
   playlistTracks: (playlistId: string) => `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-};
+});
+
+const marketParam = Object.freeze({
+  market: "from_token",
+});
 
 async function refreshToken(user: UserDocument): Promise<string> {
   const refresh_token = user.spotifyRefreshToken;
@@ -26,7 +32,7 @@ async function refreshToken(user: UserDocument): Promise<string> {
     "Content-Type": "application/x-www-form-urlencoded",
   };
 
-  const res = await fetch(api.token, {
+  const res = await fetch(apiURLs.token, {
     method: "POST",
     headers,
     body,
@@ -71,26 +77,17 @@ async function fetchWithRetry<T>(url: string, token: string): Promise<T> {
 }
 
 // https://developer.spotify.com/web-api/get-users-saved-tracks/
-async function fetchUserSavedTracks(token: string, allSongs: Record<string, SongData>): Promise<void> {
-  const responses = await fetchAllFromAPI<SpotifyApi.UsersSavedTracksResponse>(api.myTracks, token);
-  responses.forEach(response => response.items.map(mapSpotifyTrackToSong).forEach(song => addSongToObject(song, allSongs)));
-}
-
-async function fetchSongsFromAllPlaylists(token: string, allSongs: Record<string, SongData>): Promise<void> {
-  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(api.myPlaylists, token);
-
-  const requests = playlistResponses.map(async playlistResponse => {
-    const songRequests = playlistResponse.items.map(async playlist => await fetchSongsForPlaylist(token, playlist.tracks.href, allSongs));
-    return await Promise.all(songRequests);
-  });
-
-  await Promise.all(requests);
+async function fetchUserSavedTracks(token: string, allSongs: Record<string, SharedTypes.SpotifyIdObject>): Promise<void> {
+  const responses = await fetchAllFromAPI<SpotifyApi.UsersSavedTracksResponse>(apiURLs.myTracks, token);
+  responses.forEach(response =>
+    response.items.map(item => trackToSpotifyIdObject(item.track)).forEach(song => (allSongs[song.spotifyId] = song))
+  );
 }
 
 export async function fetchPlaylistData(token: string): Promise<SharedTypes.Playlist[]> {
   const playlists: SharedTypes.Playlist[] = [];
 
-  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(api.myPlaylists, token);
+  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(apiURLs.myPlaylists, token);
   playlistResponses.forEach(playlistReponse =>
     playlistReponse.items.forEach(playlist => playlists.push({ spotifyId: playlist.id, name: playlist.name }))
   );
@@ -98,26 +95,21 @@ export async function fetchPlaylistData(token: string): Promise<SharedTypes.Play
   return playlists;
 }
 
-async function fetchSongsForPlaylist(token: string, href: string, allSongs: Record<string, SongData>): Promise<void> {
-  const responses = await fetchAllFromAPI<SpotifyApi.PlaylistTrackResponse>(href, token);
-  responses.forEach(response => response.items.map(mapSpotifyTrackToSong).forEach(song => addSongToObject(song, allSongs)));
-}
+export async function fetchAllUserSongIds(token: string): Promise<SharedTypes.SpotifyIdObject[]> {
+  const allSongs: Record<string, SharedTypes.SpotifyIdObject> = {};
 
-export async function fetchAllUserTracks(token: string): Promise<SongData[]> {
-  const songs: Record<string, SongData> = {};
+  await Promise.all([fetchUserSavedTracks(token, allSongs), fetchSongsFromAllPlaylists(token, allSongs)]);
 
-  await Promise.all([fetchUserSavedTracks(token, songs), fetchSongsFromAllPlaylists(token, songs)]);
-
-  return Object.values(songs);
+  return Object.values(allSongs);
 }
 
 export async function fetchSongInfo(token: string, ids: string): Promise<SpotifyApi.MultipleTracksResponse> {
-  const url = createUrlWithParams(api.tracks, { ids, market: "from_token" });
+  const url = createUrlWithParams(apiURLs.tracks, { ids, ...marketParam });
   return await fetchWithRetry<SpotifyApi.MultipleTracksResponse>(url, token);
 }
 
 export async function playSongs(token: string, uris: string[]): Promise<void> {
-  const res = await fetch(api.play, {
+  const res = await fetch(apiURLs.play, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -151,25 +143,29 @@ export async function fetchAllFromAPI<T extends { total: number }>(
   return [firstRequestBody, ...restOfRequests];
 }
 
-export async function fetchAllSongsForPlaylist(token: string, playlistId: string): Promise<SharedTypes.Song[]> {
-  const url = api.playlistTracks(playlistId);
-  const tracks = await fetchAllFromAPI<SpotifyApi.PlaylistTrackResponse>(url, token, { market: "from_token" });
-  return tracks.map(response => response.items.map(mapSpotifyTrackToSharedSong)).flat();
+/// =========== Playlists ============ ///
+async function fetchSongsFromAllPlaylists(token: string, allSongs: Record<string, SharedTypes.SpotifyIdObject>): Promise<void> {
+  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(apiURLs.myPlaylists, token);
+
+  const requests = playlistResponses.map(async playlistResponse => {
+    const songRequests = playlistResponse.items.map(async playlist => {
+      const tracks = await fetchAllPlaylistTracks(token, playlist.tracks.href);
+      tracks.map(track => trackToSpotifyIdObject(track.track)).forEach(song => (allSongs[song.spotifyId] = song));
+    });
+    return await Promise.all(songRequests);
+  });
+
+  await Promise.all(requests);
 }
 
-function addSongToObject(song: SongData, object: Record<string, SongData>) {
-  object[song.spotifyId] = song;
+export async function fetchPlaylistSongsByPlaylistId(token: string, playlistId: string): Promise<SpotifySongData[]> {
+  const url = apiURLs.playlistTracks(playlistId);
+  const tracks = await fetchAllPlaylistTracks(token, url);
+
+  return tracks.map(item => transformSpotifyTrackToData(item.track));
 }
 
-function mapSpotifyTrackToSong({ track }: { track: SpotifyApi.TrackObjectFull }): SongData {
-  return {
-    spotifyId: track.id,
-    labels: [],
-  };
-}
-
-export function mapSpotifyTrackToSharedSong({ track }: { track: SpotifyApi.TrackObjectFull }): SharedTypes.Song {
-  const artists = track.artists.map(artist => artist.name).join(", ");
-  // TODO : accept and populate labels?
-  return { labels: [], spotifyId: track.linked_from?.id ?? track.id, name: track.name, artists };
+async function fetchAllPlaylistTracks(token: string, href: string): Promise<SpotifyApi.PlaylistTrackObject[]> {
+  const responses = await fetchAllFromAPI<SpotifyApi.PlaylistTrackResponse>(href, token, marketParam);
+  return responses.map(reponse => reponse.items).flat();
 }

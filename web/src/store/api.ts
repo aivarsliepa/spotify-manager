@@ -69,10 +69,17 @@ export const playSong = createAsyncThunk("apicalls/playSong", async (songId: str
 
 type ChangeLabelsPayload = { songId: string; labels: string[] };
 
-export const changeLabels = createAsyncThunk("apicalls/changeLabels", async ({ songId, labels }: ChangeLabelsPayload, { getState }) => {
+export const setLabelsToSong = createAsyncThunk("apicalls/changeLabels", async ({ songId, labels }: ChangeLabelsPayload, { getState }) => {
   const jwt = selectJWT(getState() as RootState);
   await postRequest(`${API_ROOT}/song/${songId}`, { labels }, jwt);
   return;
+});
+
+type CreateLabelPayload = { name: string };
+export const createLabel = createAsyncThunk("apicalls/createLabel", async ({ name }: CreateLabelPayload, { getState }) => {
+  const jwt = selectJWT(getState() as RootState);
+  const response = await postRequest(`${API_ROOT}/labels`, { name }, jwt);
+  return (await response.json()) as SharedTypes.Label;
 });
 
 export default api;

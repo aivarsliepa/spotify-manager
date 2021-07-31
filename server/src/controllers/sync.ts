@@ -1,20 +1,20 @@
 import { RequestHandler } from "express";
 
-import { UserDocument, SongDocument } from "../models/User";
-import { getAccessToken, fetchAllUserTracks } from "../spotify-service";
+import { SongDocument } from "../data/Song";
+import { getAccessToken, fetchAllUserSongIds } from "../spotify-service";
 
 // save songs to user which are not already in DB
 export const getSync: RequestHandler = async (req, res) => {
-  const user = req.user as UserDocument;
+  const user = req.user;
 
   try {
     const token = await getAccessToken(user);
-    const tracks = await fetchAllUserTracks(token);
+    const spotifyIds = await fetchAllUserSongIds(token);
 
     let shouldSave = false;
-    tracks.forEach(track => {
-      if (!user.songs.has(track.spotifyId)) {
-        user.songs.set(track.spotifyId, track as SongDocument);
+    spotifyIds.forEach(({ spotifyId }) => {
+      if (!user.songs.has(spotifyId)) {
+        user.songs.set(spotifyId, { spotifyId, labels: [] } as SongDocument);
         shouldSave = true;
       }
     });

@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function LabelList({ labels, onLabelClick, onLabelDelete }: Props) {
-  const labelList = labels.map(label => <LabelBadge label={label} key={label} onClick={onLabelClick} onDelete={onLabelDelete} />);
+  const labelList = labels.map(label => <LabelBadge label={label.name} key={label.id} onClick={onLabelClick} onDelete={onLabelDelete} />);
   return (
     <Stack direction="row" spacing={1}>
       {labelList}

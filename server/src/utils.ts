@@ -1,12 +1,12 @@
 import { URLSearchParams } from "url";
 
-export const wait = async (ms: number) => {
+export const wait = async (ms: number): Promise<void> => {
   return new Promise(resolve => {
     setTimeout(() => resolve(), ms);
   });
 };
 
-export const plusSeconds = (date: Date, seconds: number) => {
+export const plusSeconds = (date: Date, seconds: number): Date => {
   const newDate = new Date();
   newDate.setTime(date.getTime() + seconds * 1000);
   return newDate;

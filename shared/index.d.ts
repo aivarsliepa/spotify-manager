@@ -1,12 +1,14 @@
-export interface Song {
+export interface SpotifyIdObject {
   spotifyId: string;
-  labels: string[];
+}
+
+export interface Song extends SpotifyIdObject {
+  labelIds: string[];
   name: string;
   artists: string;
 }
 
-export interface Playlist {
-  spotifyId: string;
+export interface Playlist extends SpotifyIdObject {
   name: string;
 }
 
@@ -17,7 +19,10 @@ export interface GetSongsResponse {
 export interface GetPlaylistsResponse {
   playlists: Playlist[];
 }
-export type Label = string;
+export interface Label {
+  name: string;
+  id: string;
+}
 
 export interface GetLabelsResponse {
   labels: Label[];

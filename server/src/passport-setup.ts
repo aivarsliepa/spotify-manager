@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy as JwtStrategy, VerifyCallback, StrategyOptions } 
 import { Strategy as SpotifyStrategy } from "passport-spotify";
 import passport from "passport";
 
-import User from "./models/User";
+import User from "./data/User";
 import { plusSeconds } from "./utils";
 
 const jwtOpts: StrategyOptions = {
