@@ -71,6 +71,16 @@ const postRequest = (url: string, body: any, jwt: string) =>
     body: JSON.stringify(body),
   });
 
+const patchRequest = (url: string, body: any, jwt: string) =>
+  fetch(url, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
 const deleteRequest = (url: string, jwt: string) =>
   fetch(url, {
     method: "DELETE",
@@ -106,6 +116,16 @@ export const deleteLabel = createAsyncThunk("apicalls/deleteLabel", async (label
   await deleteRequest(`${API_ROOT}/labels/${labelId}`, jwt);
   console.log("deleted..");
   return;
+});
+
+type UpdateLabelPayload = {
+  id: string;
+  body: { name: string };
+};
+export const patchLabel = createAsyncThunk("apicalls/patchLabel", async ({ body, id }: UpdateLabelPayload, { getState }) => {
+  const jwt = selectJWT(getState() as RootState);
+  const response = await patchRequest(`${API_ROOT}/labels/${id}`, body, jwt);
+  return (await response.json()) as SharedTypes.Label;
 });
 
 export default api;

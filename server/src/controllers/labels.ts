@@ -77,12 +77,41 @@ export const deleteLabelById: RequestHandler = async (req, res) => {
 
     const labelObjectId = Types.ObjectId(labelId);
     const label = user.labels.id(labelObjectId);
-    user.labels.remove(label);
+    if (!label) {
+      return res.status(404).send();
+    }
 
+    user.labels.remove(label);
     user.songs.forEach(song => {
       song.labels = song.labels.filter(label => !label.equals(labelObjectId));
     });
 
+    await user.save();
+
+    res.send();
+  } catch (error) {
+    console.error("[getAllPlaylists] error getting song info", error);
+    res.status(500).send();
+  }
+};
+
+export const patchLabelById: RequestHandler = async (req, res) => {
+  try {
+    const user = req.user;
+    const { labelId } = req.params;
+    const { name } = req.body;
+
+    if (!labelId) {
+      return res.status(404).send();
+    }
+
+    const labelObjectId = Types.ObjectId(labelId);
+    const label = user.labels.id(labelObjectId);
+    if (!label) {
+      return res.status(404).send();
+    }
+
+    label.name = name;
     await user.save();
 
     res.send();

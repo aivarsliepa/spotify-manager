@@ -17,7 +17,7 @@ import { spotifyAuth, jwtAuth } from "./passport-setup";
 // import { getMutlipleSongsInfo } from "./controllers/tracks";
 import { getSongs, getPlaySong, postSong, getSingleSongInfo } from "./controllers/tracks";
 import { getAllPlaylists, getAllSongsForPlaylist } from "./controllers/playlists";
-import { deleteLabelById, getAllLabels, getLabelStats, postCreateNewLabel } from "./controllers/labels";
+import { deleteLabelById, getAllLabels, getLabelStats, patchLabelById, postCreateNewLabel } from "./controllers/labels";
 
 const app = express();
 
@@ -53,5 +53,6 @@ app.get("/labels", jwtAuth, getAllLabels);
 app.post("/labels", jwtAuth, postCreateNewLabel);
 app.get("/labels/:labelId/stats", jwtAuth, getLabelStats);
 app.delete("/labels/:labelId", jwtAuth, deleteLabelById);
+app.patch("/labels/:labelId", jwtAuth, patchLabelById);
 
 export default app;
