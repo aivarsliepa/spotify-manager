@@ -39,10 +39,20 @@ const api = createApi({
     getAllLabels: builder.query<SharedTypes.GetLabelsResponse, void>({
       query: () => `labels`,
     }),
+    getLabelStatsById: builder.query<SharedTypes.GetLabelStatsResponse, string>({
+      query: labelId => `labels/${labelId}/stats`,
+    }),
   }),
 });
 
-export const { useGetAllSongsQuery, useGetPlaylistsQuery, useGetSongsByPlaylistIdQuery, useGetSongByIdQuery, useGetAllLabelsQuery } = api;
+export const {
+  useGetAllSongsQuery,
+  useGetPlaylistsQuery,
+  useGetSongsByPlaylistIdQuery,
+  useGetSongByIdQuery,
+  useGetAllLabelsQuery,
+  useGetLabelStatsByIdQuery,
+} = api;
 
 const getRequest = (url: string, jwt: string) =>
   fetch(url, {
@@ -59,6 +69,14 @@ const postRequest = (url: string, body: any, jwt: string) =>
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
+  });
+
+const deleteRequest = (url: string, jwt: string) =>
+  fetch(url, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
   });
 
 export const playSong = createAsyncThunk("apicalls/playSong", async (songId: string, { getState }) => {
@@ -80,6 +98,14 @@ export const createLabel = createAsyncThunk("apicalls/createLabel", async ({ nam
   const jwt = selectJWT(getState() as RootState);
   const response = await postRequest(`${API_ROOT}/labels`, { name }, jwt);
   return (await response.json()) as SharedTypes.Label;
+});
+
+export const deleteLabel = createAsyncThunk("apicalls/deleteLabel", async (labelId: String, { getState }) => {
+  console.log("deleteLabel..");
+  const jwt = selectJWT(getState() as RootState);
+  await deleteRequest(`${API_ROOT}/labels/${labelId}`, jwt);
+  console.log("deleted..");
+  return;
 });
 
 export default api;

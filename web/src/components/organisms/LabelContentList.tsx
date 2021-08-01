@@ -13,7 +13,7 @@ export default function LabelContentList({ labels }: Props) {
 
   const onSearchChage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => setSearchText(event.target.value), [setSearchText]);
   const listItems = useMemo(
-    () => labels.filter(label => label.name.includes(searchText)).map(label => <LabelContentListItem text={label.name} key={label.id} />),
+    () => labels.filter(label => label.name.includes(searchText)).map(label => <LabelContentListItem label={label} key={label.id} />),
     [labels, searchText]
   );
 

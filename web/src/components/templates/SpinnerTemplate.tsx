@@ -1,4 +1,5 @@
 import Spinner from "../atoms/Spinner";
+import DialogRoot from "../organisms/DialogRoot";
 
 type Props = {
   showSpinner: boolean;
@@ -10,5 +11,5 @@ export default function SpinnerTemplate({ showSpinner, render }: Props) {
     return <Spinner />;
   }
 
-  return <>{render()}</>;
+  return <DialogRoot>{render()}</DialogRoot>;
 }

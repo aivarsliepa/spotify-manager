@@ -27,3 +27,7 @@ export interface Label {
 export interface GetLabelsResponse {
   labels: Label[];
 }
+
+export interface GetLabelStatsResponse {
+  numberOfSongs: number;
+}
