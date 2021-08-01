@@ -45,6 +45,19 @@ export default function SongLabels({ song: { labelIds, spotifyId } }: Props) {
     [labelIds, spotifyId, dispatch, songQuery, labelsQuery, allLabels]
   );
 
+  // TODO: THIS NEED MAJOR REWORK, MAKE IT STORE DRIVEN
+  const onLabelDelete = useCallback(
+    async (labelId: string) => {
+      // TODO: error handling
+      const labels = labelIds.filter(id => id !== labelId);
+
+      await dispatch(setLabelsToSong({ songId: spotifyId, labels }));
+
+      songQuery.refetch(); // TODO: fix update hack
+    },
+    [labelIds, spotifyId, dispatch, songQuery]
+  );
+
   if (!allLabels) {
     return <Spinner />;
   }
@@ -55,7 +68,7 @@ export default function SongLabels({ song: { labelIds, spotifyId } }: Props) {
     <Box>
       <NewLabelForm onSubmit={submitNewLabel} />
       {/* TODO labels */}
-      <LabelList labels={labels} onLabelClick={() => {}} onLabelDelete={() => {}} />
+      <LabelList labels={labels} onLabelClick={() => {}} onLabelDelete={onLabelDelete} />
     </Box>
   );
 }
