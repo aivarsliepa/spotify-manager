@@ -29,3 +29,22 @@ export const searchParamsString = (params: Record<string, string>): string => {
 export const createUrlWithParams = (url: string, params: Record<string, string>): string => {
   return `${url}?${searchParamsString(params)}`;
 };
+
+export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  const results = [];
+
+  while (array.length) {
+    results.push(array.splice(0, chunkSize));
+  }
+
+  return results;
+}
+
+export function stringOrDefault(input: unknown, defaultValue = ""): string {
+  return typeof input === "string" ? input : defaultValue;
+}
+
+export function numberOrDefault(input: unknown, defaultValue = 0): number {
+  const number = Number(input);
+  return isNaN(number) ? defaultValue : number;
+}

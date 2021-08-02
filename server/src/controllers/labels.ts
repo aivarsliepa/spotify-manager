@@ -3,6 +3,7 @@ import * as SharedTypes from "@aivarsliepa/shared";
 
 import { transformLabelDocToData } from "../data/transformers";
 import { Types } from "mongoose";
+import { transformAndValideStringLabelIds } from "../data/validationHelpers";
 
 export const getAllLabels: RequestHandler = async (req, res) => {
   try {
@@ -138,31 +139,19 @@ export const getMergeLabels: RequestHandler = async (req, res) => {
       return res.status(400).send();
     }
 
-    const potentialIds = String(ids)
-      .split(",")
-      .map(id => id.trim());
-
-    // no duplicates
-    const idsToRemoveSet = new Set(potentialIds);
-    if (idsToRemoveSet.size !== potentialIds.length) {
+    const validation = transformAndValideStringLabelIds(user, String(ids));
+    if (!validation.isValid) {
       return res.status(400).send();
     }
 
-    // all Ids has to be existing Ids
-    const allExistingUserLabelIds = new Set(user.labels.map(label => Types.ObjectId(label.id).toHexString()));
-    const hasNonExistingId = potentialIds.some(id => !allExistingUserLabelIds.has(id));
-    if (hasNonExistingId) {
-      return res.status(400).send();
-    }
+    const idsToRemoveSet = validation.labelHexstrings;
 
     // to merge, need at least 2
-    if (allExistingUserLabelIds.size < 2) {
+    if (idsToRemoveSet.size < 2) {
       return res.status(400).send();
     }
 
     const newLabel = user.labels.create({ name });
-
-    console.log(newLabel.id);
 
     user.songs.forEach(song => {
       let shouldAddNewLabel = false;

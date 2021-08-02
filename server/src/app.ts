@@ -14,7 +14,6 @@ import "./passport-setup";
 import { getSpotifyCallback } from "./controllers/auth";
 import { getSync } from "./controllers/sync";
 import { spotifyAuth, jwtAuth } from "./passport-setup";
-// import { getMutlipleSongsInfo } from "./controllers/tracks";
 import { getSongs, getPlaySong, postSong, getSingleSongInfo } from "./controllers/tracks";
 import { getAllPlaylists, getAllSongsForPlaylist } from "./controllers/playlists";
 import { deleteLabelById, getAllLabels, getLabelStats, getMergeLabels, patchLabelById, postCreateNewLabel } from "./controllers/labels";
@@ -35,19 +34,14 @@ app.get("/auth/spotify/callback", spotifyAuth, getSpotifyCallback);
 
 app.get("/sync", jwtAuth, getSync);
 
-// TODO: to be changed
-// app.get("/songInfo", jwtAuth, getMutlipleSongsInfo); // TODO: this is not used ?
-app.get("/songInfo/:songId", jwtAuth, getSingleSongInfo);
-
-// TODO: this temporary route for testing/dev
-app.get("/get-all-songs", jwtAuth, getSongs);
+app.get("/songs/:songId", jwtAuth, getSingleSongInfo);
+app.get("/songs", jwtAuth, getSongs);
+app.patch("/songs/:songId", jwtAuth, postSong);
 
 app.get("/play-song/:songId", jwtAuth, getPlaySong);
 
 app.get("/playlists", jwtAuth, getAllPlaylists);
 app.get("/playlists/:playlistId", jwtAuth, getAllSongsForPlaylist);
-
-app.post("/song/:songId", jwtAuth, postSong);
 
 app.get("/labels", jwtAuth, getAllLabels);
 app.post("/labels", jwtAuth, postCreateNewLabel);

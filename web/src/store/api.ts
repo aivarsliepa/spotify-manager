@@ -25,7 +25,7 @@ const api = createApi({
   }),
   endpoints: builder => ({
     getAllSongs: builder.query<SharedTypes.GetSongsResponse, void>({
-      query: () => `get-all-songs`,
+      query: () => `songs`,
     }),
     getPlaylists: builder.query<SharedTypes.GetPlaylistsResponse, void>({
       query: () => `playlists`,
@@ -34,7 +34,7 @@ const api = createApi({
       query: playlistId => `playlists/${playlistId}`,
     }),
     getSongById: builder.query<SharedTypes.Song, string>({
-      query: songId => `songInfo/${songId}`,
+      query: songId => `songs/${songId}`,
     }),
     getAllLabels: builder.query<SharedTypes.GetLabelsResponse, void>({
       query: () => `labels`,
@@ -105,7 +105,7 @@ type ChangeLabelsPayload = { songId: string; labels: string[] };
 
 export const setLabelsToSong = createAsyncThunk("apicalls/changeLabels", async ({ songId, labels }: ChangeLabelsPayload, { getState }) => {
   const jwt = selectJWT(getState() as RootState);
-  await postRequest(`${API_ROOT}/song/${songId}`, { labels }, jwt);
+  await patchRequest(`${API_ROOT}/songs/${songId}`, { labels }, jwt);
   return;
 });
 
