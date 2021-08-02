@@ -18,6 +18,6 @@ export interface SongDocument extends Document, SharedTypes.SpotifyIdObject {
 }
 
 export const songSchema = new Schema<SongDocument>({
-  labels: { required: true, type: [Types.ObjectId] },
+  labels: [{ required: true, type: Types.ObjectId, ref: "User.labels" }], // it does not automatically remove refences when removing
   spotifyId: { required: true, type: String },
 });

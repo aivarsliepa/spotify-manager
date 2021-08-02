@@ -52,14 +52,20 @@ export const {
   useGetSongByIdQuery,
   useGetAllLabelsQuery,
   useGetLabelStatsByIdQuery,
+  useLazyGetLabelStatsByIdQuery,
 } = api;
 
-const getRequest = (url: string, jwt: string) =>
-  fetch(url, {
+const getRequest = (url: string, jwt: string, searchParams?: Record<string, string>) => {
+  if (searchParams) {
+    url += `?${new URLSearchParams(searchParams).toString()}`;
+  }
+
+  return fetch(url, {
     headers: {
       Authorization: `Bearer ${jwt}`,
     },
   });
+};
 
 const postRequest = (url: string, body: any, jwt: string) =>
   fetch(url, {
@@ -111,10 +117,8 @@ export const createLabel = createAsyncThunk("apicalls/createLabel", async ({ nam
 });
 
 export const deleteLabel = createAsyncThunk("apicalls/deleteLabel", async (labelId: String, { getState }) => {
-  console.log("deleteLabel..");
   const jwt = selectJWT(getState() as RootState);
   await deleteRequest(`${API_ROOT}/labels/${labelId}`, jwt);
-  console.log("deleted..");
   return;
 });
 
@@ -126,6 +130,17 @@ export const patchLabel = createAsyncThunk("apicalls/patchLabel", async ({ body,
   const jwt = selectJWT(getState() as RootState);
   const response = await patchRequest(`${API_ROOT}/labels/${id}`, body, jwt);
   return (await response.json()) as SharedTypes.Label;
+});
+
+type MergeLabelsPayload = {
+  ids: string[];
+  name: string;
+};
+export const mergeLabels = createAsyncThunk("apicalls/patchLabel", async ({ ids, name }: MergeLabelsPayload, { getState }) => {
+  const params = { ids: ids.join(","), name };
+  const jwt = selectJWT(getState() as RootState);
+  await getRequest(`${API_ROOT}/labels/merge`, jwt, params);
+  return;
 });
 
 export default api;

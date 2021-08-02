@@ -7,7 +7,7 @@ import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
 import * as SharedTypes from "@aivarsliepa/shared";
 import CheckIcon from "@material-ui/icons/Check";
 
-import { deleteLabel, patchLabel, useGetAllLabelsQuery, useGetLabelStatsByIdQuery } from "../../store/api";
+import { deleteLabel, mergeLabels, patchLabel, useGetAllLabelsQuery, useGetLabelStatsByIdQuery } from "../../store/api";
 import { DialogContext } from "../organisms/DialogRoot";
 import { useAppDispatch } from "../../store/hooks";
 
@@ -51,18 +51,33 @@ export default function LabelContentListItem({ label: { id, name } }: Props) {
 
   const onCommitEdit = useCallback(async () => {
     const allLabels = labelsQuery.data!.labels;
-    const nameAlreadyExists = allLabels.some(label => label.name === rename);
+    const existingLabel = allLabels.find(label => label.name === rename);
 
-    if (nameAlreadyExists) {
-      // merge request!
+    if (existingLabel) {
+      const title = `Merge labels "${name}" and "${existingLabel.name}" ?`;
+      const contentText = `You are trying to rename label "${name}" to "${existingLabel.name}", but it already exists. Do you want to merge these labels?
+      Songs affected: TODO`;
+
+      const didConfirm = await dialogContext.showDialog({
+        title,
+        contentText,
+      });
+
+      if (didConfirm) {
+        await dispatch(mergeLabels({ name: rename, ids: [id, existingLabel.id] }));
+        labelsQuery.refetch(); // TODO: needs better update logic
+        setIsEditing(false);
+        // TODO: this does not refetch affected songs, older info about labels are still cached and reload is necessary.
+        // need to rework how data is stored and fetched to fix this, currently it's kind of a hack
+      }
     } else {
       await dispatch(patchLabel({ body: { name: rename }, id }));
       labelsQuery.refetch(); // TODO: needs better update logic
       setIsEditing(false);
     }
-  }, [labelsQuery, rename, dispatch, id]);
+  }, [labelsQuery, rename, dispatch, id, dialogContext, name]);
 
-  const openOpenSongs = useCallback(() => {
+  const openSongs = useCallback(() => {
     // TODO
   }, []);
 
@@ -101,7 +116,7 @@ export default function LabelContentListItem({ label: { id, name } }: Props) {
       )}
 
       <ListItemSecondaryAction>
-        <IconButton aria-label="open songs" onClick={openOpenSongs}>
+        <IconButton aria-label="open songs" onClick={openSongs}>
           <LibraryMusicIcon />
         </IconButton>
         <IconButton aria-label="edit" onClick={onEditLabel}>

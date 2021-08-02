@@ -120,3 +120,76 @@ export const patchLabelById: RequestHandler = async (req, res) => {
     res.status(500).send();
   }
 };
+
+/* 
+  "Merge labels"
+    params:
+      ids - list of IDs that need to be merged
+      name - name of final label
+    
+  Behind the scenes it actually deletes all labels and creates a new one with given name.
+
+*/
+export const getMergeLabels: RequestHandler = async (req, res) => {
+  try {
+    const user = req.user;
+    const { ids, name } = req.query;
+    if (!(ids && name)) {
+      return res.status(400).send();
+    }
+
+    const potentialIds = String(ids)
+      .split(",")
+      .map(id => id.trim());
+
+    // no duplicates
+    const idsToRemoveSet = new Set(potentialIds);
+    if (idsToRemoveSet.size !== potentialIds.length) {
+      return res.status(400).send();
+    }
+
+    // all Ids has to be existing Ids
+    const allExistingUserLabelIds = new Set(user.labels.map(label => Types.ObjectId(label.id).toHexString()));
+    const hasNonExistingId = potentialIds.some(id => !allExistingUserLabelIds.has(id));
+    if (hasNonExistingId) {
+      return res.status(400).send();
+    }
+
+    // to merge, need at least 2
+    if (allExistingUserLabelIds.size < 2) {
+      return res.status(400).send();
+    }
+
+    const newLabel = user.labels.create({ name });
+
+    console.log(newLabel.id);
+
+    user.songs.forEach(song => {
+      let shouldAddNewLabel = false;
+      song.labels = song.labels.filter(label => {
+        if (idsToRemoveSet.has(label.toHexString())) {
+          shouldAddNewLabel = true;
+          return false;
+        }
+
+        return true;
+      });
+
+      if (shouldAddNewLabel) {
+        song.labels.push(newLabel.id);
+      }
+    });
+
+    user.labels.push(newLabel);
+    for (const labelId of idsToRemoveSet) {
+      user.labels.id(Types.ObjectId(labelId)).remove();
+    }
+
+    await user.save();
+
+    res.send();
+  } catch (error) {
+    console.error("[getAllPlaylists] error getting song info", error);
+    res.status(500).send();
+  }
+};
