@@ -1,4 +1,5 @@
 import { Card, CardContent, List, Typography } from "@material-ui/core";
+import { useStyles } from "../../styleHooks";
 import { WithChildren } from "../../types";
 
 type Props = WithChildren<{
@@ -6,12 +7,13 @@ type Props = WithChildren<{
 }>;
 
 export default function ListContent({ header, children }: Props) {
+  const styles = useStyles();
   return (
-    <Card raised>
+    <Card raised className={styles.flexGrowColumn}>
       <CardContent>
         <Typography variant="h5">{header}</Typography>
       </CardContent>
-      <List>{children}</List>
+      <List className={styles.flexGrowColumn}>{children}</List>
     </Card>
   );
 }

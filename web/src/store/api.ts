@@ -25,7 +25,7 @@ const api = createApi({
   }),
   endpoints: builder => ({
     getAllSongs: builder.query<SharedTypes.GetSongsResponse, void>({
-      query: () => `songs`,
+      query: () => `songs?limit=50`, // TODO: this is temporary limit, later it is planned to have some strategy (and query based on labels)
     }),
     getPlaylists: builder.query<SharedTypes.GetPlaylistsResponse, void>({
       query: () => `playlists`,

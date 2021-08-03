@@ -6,5 +6,3 @@
 - https://redux-toolkit.js.org/rtk-query/usage/streaming-updates
 
 # Doing
-
-- max 50 songs can get queried from spotify
