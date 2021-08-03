@@ -11,3 +11,7 @@ export function deleteAllCookies() {
 export function createSongName(song: Song): string {
   return `${song.name} - ${song.artists}`;
 }
+
+export function createLabelListString(labels: Set<string>): string {
+  return [...labels].sort().join(",");
+}

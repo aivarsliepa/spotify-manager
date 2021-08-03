@@ -23,7 +23,7 @@ export function selectUserSongs(
 
   if (shouldUseIncludeList || shouldUseExcludeList) {
     matchedSongs = matchedSongs.filter(song => {
-      let shouldInclude = false;
+      let shouldInclude = !shouldUseIncludeList;
 
       for (const label of song.labels) {
         const labelHexString = label.toHexString();

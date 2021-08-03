@@ -144,7 +144,7 @@ export const getMergeLabels: RequestHandler = async (req, res) => {
       return res.status(400).send();
     }
 
-    const idsToRemoveSet = validation.labelHexstrings;
+    const idsToRemoveSet = validation.labelHexStrings;
 
     // to merge, need at least 2
     if (idsToRemoveSet.size < 2) {

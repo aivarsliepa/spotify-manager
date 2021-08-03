@@ -48,13 +48,11 @@ export const getSongs: RequestHandler = async (req, res) => {
 
     const exludeValidation = transformAndValideStringLabelIds(user, stringOrDefault(excludeLabels));
     if (!exludeValidation.isValid) {
-      console.log("exludeValidation", exludeValidation.isValid);
       return res.status(400).send();
     }
 
     const includeValidation = transformAndValideStringLabelIds(user, stringOrDefault(includeLabels));
     if (!includeValidation.isValid) {
-      console.log("includeValidation", includeValidation.isValid);
       return res.status(400).send();
     }
 

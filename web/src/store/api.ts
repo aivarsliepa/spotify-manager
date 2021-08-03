@@ -10,6 +10,13 @@ export const API_ROOT = "http://localhost:9000";
 
 export const LOGIN_URL = `${API_ROOT}/auth/spotify`;
 
+type GetAllSongsQuery = {
+  includeLabels: string;
+  excludeLabels: string;
+  limit?: string;
+  offset?: string;
+};
+
 const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
@@ -24,8 +31,15 @@ const api = createApi({
     },
   }),
   endpoints: builder => ({
-    getAllSongs: builder.query<SharedTypes.GetSongsResponse, void>({
-      query: () => `songs?limit=50`, // TODO: this is temporary limit, later it is planned to have some strategy (and query based on labels)
+    getAllSongs: builder.query<SharedTypes.GetSongsResponse, GetAllSongsQuery>({
+      query: ({ excludeLabels, includeLabels, limit = "50", offset }) => {
+        // TODO: this is temporary limit 50, later it is planned to have some strategy (and query based on labels)
+        const urlParams = new URLSearchParams({ excludeLabels, includeLabels });
+        if (limit) urlParams.set("limit", limit);
+        if (offset) urlParams.set("offset", offset);
+
+        return `songs?${urlParams.toString()}`;
+      },
     }),
     getPlaylists: builder.query<SharedTypes.GetPlaylistsResponse, void>({
       query: () => `playlists`,

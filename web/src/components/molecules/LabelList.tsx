@@ -1,8 +1,6 @@
-import { Stack } from "@material-ui/core";
+import { Chip, Stack } from "@material-ui/core";
 import { Label } from "@aivarsliepa/shared";
 import { useMemo } from "react";
-
-import LabelBadge from "../atoms/LabelBadge";
 
 interface Props {
   labels: Label[];
@@ -12,8 +10,7 @@ interface Props {
 
 export default function LabelList({ labels, onLabelClick, onLabelDelete }: Props) {
   const labelList = useMemo(
-    () =>
-      labels.map(label => <LabelBadge label={label.name} key={label.id} onClick={onLabelClick} onDelete={() => onLabelDelete(label.id)} />),
+    () => labels.map(label => <Chip label={label.name} key={label.id} onClick={onLabelClick} onDelete={() => onLabelDelete(label.id)} />),
     [labels, onLabelClick, onLabelDelete]
   );
 
