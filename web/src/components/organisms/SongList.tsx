@@ -161,6 +161,7 @@ export default function SongList({ songs }: Props) {
                   <ContentListItem
                     style={style}
                     text={createSongName(song)}
+                    image={song.image}
                     key={song.spotifyId}
                     onClick={() => history.push(`/songs/${song.spotifyId}`)}
                   />

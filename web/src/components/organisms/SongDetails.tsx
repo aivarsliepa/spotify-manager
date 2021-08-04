@@ -21,13 +21,7 @@ export default function SongDetails({ song }: Props) {
 
   return (
     <Card sx={{ display: "flex" }}>
-      {/* TODO get real image and responsive image */}
-      {/* TODO styling */}
-      <CardMedia
-        sx={{ width: 240, height: 240 }}
-        image="https://i.scdn.co/image/ab67616d00001e029c284a6855f4945dc5a3cd73"
-        title="Album image"
-      />
+      <CardMedia sx={{ width: 240, height: 240 }} image={song.image} title="Album image" />
       <Box sx={{ display: "flex", flexDirection: "column" }}>
         <CardContent sx={{ flex: "1 0 auto" }}>
           <Typography variant="h4">{song.name}</Typography>

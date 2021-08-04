@@ -5,35 +5,36 @@ import { LabelDocument } from "./Label";
 import { PlaylistDocument } from "./Playlist";
 import { SongDocument, SpotifySongData } from "./Song";
 
-const trackToSpotifyIdObject = (track: SpotifyApi.TrackObjectFull): SharedTypes.SpotifyIdObject => ({
-  spotifyId: track.linked_from?.id ?? track.id,
-});
-
 export const transformLabelDocToData = ({ name, id }: LabelDocument): SharedTypes.Label => ({ name, id });
 
-export const transformSpotifyPlaylistToData = ({ name, id }: SpotifyApi.PlaylistObjectSimplified): SharedTypes.Playlist => ({
+export const transformSpotifyPlaylistToData = ({ name, id, images }: SpotifyApi.PlaylistObjectSimplified): SharedTypes.Playlist => ({
   name,
   spotifyId: id,
+  image: images[0]?.url ?? "",
 });
 
-export const transformPlaylistDocToData = ({ name, spotifyId }: PlaylistDocument): SharedTypes.Playlist => ({ name, spotifyId });
+export const transformPlaylistDocToData = ({ name, spotifyId, image }: PlaylistDocument): SharedTypes.Playlist => ({
+  name,
+  spotifyId,
+  image,
+});
 
 export const transformSpotifyTrackToData = (track: SpotifyApi.TrackObjectFull): SpotifySongData => {
   const artists = track.artists.map(artist => artist.name);
-  const { spotifyId } = trackToSpotifyIdObject(track);
 
   return {
     artists,
-    spotifyId,
+    spotifyId: track.linked_from?.id ?? track.id,
     name: track.name,
     uri: track.uri,
+    image: track.album.images[0]?.url ?? "",
   };
 };
 
 const transformDbIdToString = (dbId: Types.ObjectId): string => dbId.toHexString();
 
 export const transformSongDocumentToSharedSong = (songDocument: SongDocument): SharedTypes.Song => {
-  const { artists, isSaved, labels, name, playlists, spotifyId } = songDocument;
+  const { artists, isSaved, labels, name, playlists, spotifyId, image } = songDocument;
 
   return {
     artists,
@@ -42,7 +43,6 @@ export const transformSongDocumentToSharedSong = (songDocument: SongDocument): S
     name,
     playlistIds: playlists,
     spotifyId,
+    image,
   };
 };
-
-export const stringToObjectId = (str: string): Types.ObjectId => Types.ObjectId(str);

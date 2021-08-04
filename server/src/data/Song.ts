@@ -7,6 +7,7 @@ export interface SpotifySongData extends SharedTypes.SpotifyIdObject {
   name: string;
   artists: string[];
   uri: string;
+  image: string;
 }
 
 interface SongDocumentData extends SharedTypes.SpotifyIdObject {
@@ -16,6 +17,7 @@ interface SongDocumentData extends SharedTypes.SpotifyIdObject {
   isSaved: boolean;
   name: string;
   uri: string; // used for playing song
+  image: string;
 }
 
 export type SongDocument = SongDocumentData & Document;
@@ -28,10 +30,11 @@ export const songSchema = new Schema<SongDocument>({
   isSaved: { required: true, type: Boolean },
   artists: [{ required: true, type: String }],
   uri: { required: true, type: String },
+  image: { required: true, type: String },
 });
 
 // make sure that all fields are populated
-function newSong({ name, artists, spotifyId, uri }: SpotifySongData): SongDocumentData {
+function newSong({ name, artists, spotifyId, uri, image }: SpotifySongData): SongDocumentData {
   return {
     name,
     artists: [...artists],
@@ -40,6 +43,7 @@ function newSong({ name, artists, spotifyId, uri }: SpotifySongData): SongDocume
     isSaved: false,
     playlists: [],
     uri,
+    image,
   };
 }
 

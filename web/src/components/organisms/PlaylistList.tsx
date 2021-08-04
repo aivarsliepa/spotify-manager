@@ -15,7 +15,12 @@ export default function PlaylistList({ playlists }: Props) {
   const listItems = useMemo(
     () =>
       playlists.map(playlist => (
-        <ContentListItem text={playlist.name} key={playlist.spotifyId} onClick={() => history.push(`/playlists/${playlist.spotifyId}`)} />
+        <ContentListItem
+          text={playlist.name}
+          key={playlist.spotifyId}
+          image={playlist.image}
+          onClick={() => history.push(`/playlists/${playlist.spotifyId}`)}
+        />
       )),
     [playlists, history]
   );

@@ -8,10 +8,12 @@ export interface Song extends SpotifyIdObject {
   playlistIds: string[];
   labelIds: string[];
   artists: string[];
+  image: string;
 }
 
 export interface Playlist extends SpotifyIdObject {
   name: string;
+  image: string;
 }
 
 export interface GetSongsResponse {
