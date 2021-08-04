@@ -30,15 +30,16 @@ export const createUrlWithParams = (url: string, params: Record<string, string>)
   return `${url}?${searchParamsString(params)}`;
 };
 
-export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
-  const results = [];
+// might need it later
+// export function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+//   const results = [];
 
-  while (array.length) {
-    results.push(array.splice(0, chunkSize));
-  }
+//   while (array.length) {
+//     results.push(array.splice(0, chunkSize));
+//   }
 
-  return results;
-}
+//   return results;
+// }
 
 export function stringOrDefault(input: unknown, defaultValue = ""): string {
   return typeof input === "string" ? input : defaultValue;

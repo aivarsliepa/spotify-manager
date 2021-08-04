@@ -11,8 +11,9 @@ export const API_ROOT = "http://localhost:9000";
 export const LOGIN_URL = `${API_ROOT}/auth/spotify`;
 
 type GetAllSongsQuery = {
-  includeLabels: string;
-  excludeLabels: string;
+  includeLabels?: string;
+  excludeLabels?: string;
+  playlistId?: string;
   limit?: string;
   offset?: string;
 };
@@ -31,10 +32,10 @@ const api = createApi({
     },
   }),
   endpoints: builder => ({
-    getAllSongs: builder.query<SharedTypes.GetSongsResponse, GetAllSongsQuery>({
-      query: ({ excludeLabels, includeLabels, limit = "50", offset }) => {
-        // TODO: this is temporary limit 50, later it is planned to have some strategy (and query based on labels)
+    getSongs: builder.query<SharedTypes.GetSongsResponse, GetAllSongsQuery>({
+      query: ({ excludeLabels = "", includeLabels = "", limit, offset, playlistId }) => {
         const urlParams = new URLSearchParams({ excludeLabels, includeLabels });
+        if (playlistId) urlParams.set("playlistId", playlistId);
         if (limit) urlParams.set("limit", limit);
         if (offset) urlParams.set("offset", offset);
 
@@ -43,9 +44,6 @@ const api = createApi({
     }),
     getPlaylists: builder.query<SharedTypes.GetPlaylistsResponse, void>({
       query: () => `playlists`,
-    }),
-    getSongsByPlaylistId: builder.query<SharedTypes.GetSongsResponse, string>({
-      query: playlistId => `playlists/${playlistId}`,
     }),
     getSongById: builder.query<SharedTypes.Song, string>({
       query: songId => `songs/${songId}`,
@@ -60,9 +58,8 @@ const api = createApi({
 });
 
 export const {
-  useGetAllSongsQuery,
+  useGetSongsQuery,
   useGetPlaylistsQuery,
-  useGetSongsByPlaylistIdQuery,
   useGetSongByIdQuery,
   useGetAllLabelsQuery,
   useGetLabelStatsByIdQuery,

@@ -9,7 +9,7 @@ export function deleteAllCookies() {
   }
 }
 export function createSongName(song: Song): string {
-  return `${song.name} - ${song.artists}`;
+  return `${song.name} - ${song.artists.join(", ")}`;
 }
 
 export function createLabelListString(labels: Set<string>): string {

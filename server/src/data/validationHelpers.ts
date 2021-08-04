@@ -28,7 +28,6 @@ export function transformAndValideStringLabelIds(user: UserDocument, labelIdsStr
   // no duplicates
   const potentialIdsSet = new Set(potentialIds);
   if (potentialIdsSet.size !== potentialIds.length) {
-    console.log("return invalid ; dupes");
     return { isValid: false };
   }
 
@@ -36,7 +35,6 @@ export function transformAndValideStringLabelIds(user: UserDocument, labelIdsStr
   const allExistingUserLabelIds = new Set(user.labels.map(label => Types.ObjectId(label.id).toHexString()));
   const hasNonExistingId = potentialIds.some(id => !allExistingUserLabelIds.has(id));
   if (hasNonExistingId) {
-    console.log("return invalid; not real ids");
     return { isValid: false };
   }
 
@@ -44,4 +42,14 @@ export function transformAndValideStringLabelIds(user: UserDocument, labelIdsStr
     isValid: true,
     labelHexStrings: potentialIdsSet,
   };
+}
+
+export function isPlaylistSpotifyIdValid(user: UserDocument, playlistId: string): boolean {
+  for (const playlist of user.playlists) {
+    if (playlist.spotifyId === playlistId) {
+      return true;
+    }
+  }
+
+  false;
 }

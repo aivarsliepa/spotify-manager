@@ -1,22 +1,21 @@
 import { SongDocument } from "./Song";
-import { UserDocument } from "./User";
 
 /**
  * Query songs based on labels it has. Filter rules only if Set is not empty.
- * @param user currentUser
+ * @param inputSongs input song documents
  * @param includeLabels hexString list of label IDs that song should have
  * @param excludeLabels hexString list of label IDs that song not have
  * @param limit max number of songs returned
  * @param offset ofset where songs are being counted from
  */
-export function selectUserSongs(
-  user: UserDocument,
+export function selectSongsByLabels(
+  inputSongs: SongDocument[],
   includeLabels: Set<string>,
   excludeLabels: Set<string>,
   limit = 0,
   offset = 0
 ): SongDocument[] {
-  let matchedSongs: SongDocument[] = [...user.songs.values()];
+  let matchedSongs = inputSongs;
 
   const shouldUseIncludeList = includeLabels.size > 0;
   const shouldUseExcludeList = excludeLabels.size > 0;
@@ -46,4 +45,18 @@ export function selectUserSongs(
   }
 
   return matchedSongs.slice(offset);
+}
+
+/**
+ * Filter songs that are in playlist
+ */
+export function selectSongsByPlaylistId(inputSongs: SongDocument[], playlistSpotifyId: string): SongDocument[] {
+  return inputSongs.filter(song => {
+    for (const id of song.playlists) {
+      if (id === playlistSpotifyId) {
+        return true;
+      }
+    }
+    return false;
+  });
 }

@@ -14,7 +14,7 @@ import "./passport-setup";
 import { getSpotifyCallback } from "./controllers/auth";
 import { getSync } from "./controllers/sync";
 import { spotifyAuth, jwtAuth } from "./passport-setup";
-import { getSongs, getPlaySong, postSong, getSingleSongInfo } from "./controllers/tracks";
+import { getSongs, getPlaySongById, postSong, getSingleSongInfo } from "./controllers/tracks";
 import { getAllPlaylists, getAllSongsForPlaylist } from "./controllers/playlists";
 import { deleteLabelById, getAllLabels, getLabelStats, getMergeLabels, patchLabelById, postCreateNewLabel } from "./controllers/labels";
 
@@ -38,7 +38,8 @@ app.get("/songs/:songId", jwtAuth, getSingleSongInfo);
 app.get("/songs", jwtAuth, getSongs);
 app.patch("/songs/:songId", jwtAuth, postSong);
 
-app.get("/play-song/:songId", jwtAuth, getPlaySong);
+// TODO: /songs/play?ids=1,2,3
+app.get("/play-song/:songId", jwtAuth, getPlaySongById);
 
 app.get("/playlists", jwtAuth, getAllPlaylists);
 app.get("/playlists/:playlistId", jwtAuth, getAllSongsForPlaylist);

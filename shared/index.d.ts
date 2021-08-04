@@ -3,9 +3,11 @@ export interface SpotifyIdObject {
 }
 
 export interface Song extends SpotifyIdObject {
-  labelIds: string[];
   name: string;
-  artists: string;
+  isSaved: boolean;
+  playlistIds: string[];
+  labelIds: string[];
+  artists: string[];
 }
 
 export interface Playlist extends SpotifyIdObject {

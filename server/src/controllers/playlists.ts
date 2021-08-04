@@ -1,15 +1,12 @@
 import { RequestHandler } from "express";
 import * as SharedTypes from "@aivarsliepa/shared";
 
-import { getAccessToken, fetchPlaylistData, fetchPlaylistSongsByPlaylistId } from "../spotify-service";
-import { mergeAndPopulateSongData } from "../data/transformers";
+import { transformPlaylistDocToData, transformSongDocumentToSharedSong } from "../data/transformers";
+import { selectSongsByPlaylistId } from "../data/queryHelpers";
 
 export const getAllPlaylists: RequestHandler = async (req, res) => {
   try {
-    const user = req.user;
-    const token = await getAccessToken(user);
-    const playlists = await fetchPlaylistData(token);
-
+    const playlists = req.user.playlists.map(transformPlaylistDocToData);
     const resBody: SharedTypes.GetPlaylistsResponse = { playlists };
     res.json(resBody);
   } catch (error) {
@@ -23,9 +20,7 @@ export const getAllSongsForPlaylist: RequestHandler = async (req, res) => {
     const user = req.user;
     const { playlistId } = req.params;
 
-    const token = await getAccessToken(user);
-    const spotifySongData = await fetchPlaylistSongsByPlaylistId(token, playlistId);
-    const songs = mergeAndPopulateSongData(user, spotifySongData);
+    const songs = selectSongsByPlaylistId([...user.songs.values()], playlistId).map(transformSongDocumentToSharedSong);
 
     const resBody: SharedTypes.GetSongsResponse = { songs };
     res.json(resBody);

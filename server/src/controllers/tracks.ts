@@ -1,12 +1,11 @@
 import { RequestHandler } from "express";
 import * as SharedTypes from "@aivarsliepa/shared";
 
-import { getAccessToken, fetchSongInfo, playSongs } from "../spotify-service";
-import { mergeAndPopulateSongData, stringToObjectId, transformSpotifyTrackToData } from "../data/transformers";
-import { selectUserSongs } from "../data/queryHelpers";
-import { transformAndValideStringLabelIds } from "../data/validationHelpers";
-import { chunkArray, numberOrDefault, stringOrDefault } from "../utils";
-import { SpotifySongData } from "../data/Song";
+import { getAccessToken, playSongs } from "../spotify-service";
+import { stringToObjectId, transformSongDocumentToSharedSong } from "../data/transformers";
+import { selectSongsByLabels, selectSongsByPlaylistId } from "../data/queryHelpers";
+import { isPlaylistSpotifyIdValid, transformAndValideStringLabelIds } from "../data/validationHelpers";
+import { numberOrDefault, stringOrDefault } from "../utils";
 
 /**
  * Fetch info for single song by it's ID
@@ -16,16 +15,13 @@ export const getSingleSongInfo: RequestHandler = async (req, res) => {
     const user = req.user;
     const { songId } = req.params;
 
-    const token = await getAccessToken(user);
-    const data = await fetchSongInfo(token, songId);
-    const track = data.tracks[0];
-    if (!track) {
+    const songDocument = user.songs.get(songId);
+    if (!songDocument) {
       return res.status(404).send();
     }
 
-    const spotifySongData = transformSpotifyTrackToData(track);
-    const song: SharedTypes.Song = mergeAndPopulateSongData(user, [spotifySongData])[0];
-
+    // TODO: share type of response body
+    const song: SharedTypes.Song = transformSongDocumentToSharedSong(songDocument);
     res.json(song);
   } catch (error) {
     console.error("[getSingleSongInfo] error getting song info", error);
@@ -44,7 +40,14 @@ export const getSingleSongInfo: RequestHandler = async (req, res) => {
 export const getSongs: RequestHandler = async (req, res) => {
   try {
     const user = req.user;
-    const { includeLabels, excludeLabels, limit, offset } = req.query;
+    const { includeLabels, excludeLabels, limit, offset, playlistId } = req.query;
+
+    const queryLimit = numberOrDefault(limit);
+    const queryOffset = numberOrDefault(offset);
+
+    if (queryLimit < 0 || queryOffset < 0) {
+      return res.status(400).send();
+    }
 
     const exludeValidation = transformAndValideStringLabelIds(user, stringOrDefault(excludeLabels));
     if (!exludeValidation.isValid) {
@@ -56,16 +59,23 @@ export const getSongs: RequestHandler = async (req, res) => {
       return res.status(400).send();
     }
 
+    const playlistSpotifyId = stringOrDefault(playlistId);
+    let songDocs = [...user.songs.values()];
+
+    if (playlistSpotifyId) {
+      if (!isPlaylistSpotifyIdValid(user, playlistSpotifyId)) {
+        return res.status(400).send();
+      }
+
+      songDocs = selectSongsByPlaylistId(songDocs, playlistSpotifyId);
+    }
+
     const includeLabelsSet = includeValidation.labelHexStrings;
     const excludeLabelsSet = exludeValidation.labelHexStrings;
 
-    const songsFound = selectUserSongs(user, includeLabelsSet, excludeLabelsSet, numberOrDefault(limit), numberOrDefault(offset)).map(
-      song => song.spotifyId
+    const songs = selectSongsByLabels(songDocs, includeLabelsSet, excludeLabelsSet, numberOrDefault(limit), numberOrDefault(offset)).map(
+      transformSongDocumentToSharedSong
     );
-
-    const token = await getAccessToken(user);
-    const spotifySongs = await fetchMultipleSongInfoByIds(token, songsFound);
-    const songs = mergeAndPopulateSongData(user, spotifySongs);
 
     const resBody: SharedTypes.GetSongsResponse = { songs };
     res.json(resBody);
@@ -75,28 +85,21 @@ export const getSongs: RequestHandler = async (req, res) => {
   }
 };
 
-async function fetchMultipleSongInfoByIds(token: string, ids: string[]): Promise<SpotifySongData[]> {
-  const idsChunked = chunkArray(ids, 50).map(idsArr => idsArr.join(","));
-
-  const requests = idsChunked.map(async ids => await fetchSongInfo(token, ids));
-  const responseList = await Promise.all(requests);
-  const spotifySongs = responseList.map(response => response.tracks.map(transformSpotifyTrackToData)).flat();
-  return spotifySongs;
-}
-
 /**
  * Play song by ID
  */
-export const getPlaySong: RequestHandler = async (req, res) => {
+export const getPlaySongById: RequestHandler = async (req, res) => {
   try {
     const user = req.user;
     const { songId } = req.params;
 
-    const token = await getAccessToken(user);
-    const data = await fetchSongInfo(token, songId);
+    const songDocument = user.songs.get(songId);
+    if (!songDocument) {
+      return res.status(404).send();
+    }
 
-    const [song] = data.tracks;
-    await playSongs(token, [song.uri]);
+    const token = await getAccessToken(user);
+    await playSongs(token, [songDocument.uri]);
 
     res.send();
   } catch (error) {
@@ -109,6 +112,8 @@ export const getPlaySong: RequestHandler = async (req, res) => {
  * Save labels for song
  */
 export const postSong: RequestHandler = async (req, res) => {
+  // TODO: should be PATCH method, might need to change different url and to support multiple songs, something like = /songs/add/label?songIds=1,2,3&labelId=4
+
   try {
     const user = req.user;
     const { songId } = req.params;

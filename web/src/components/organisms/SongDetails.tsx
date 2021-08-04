@@ -32,7 +32,7 @@ export default function SongDetails({ song }: Props) {
         <CardContent sx={{ flex: "1 0 auto" }}>
           <Typography variant="h4">{song.name}</Typography>
           <Typography variant="h5" color="text.secondary">
-            {song.artists}
+            {song.artists.join(", ")}
           </Typography>
           <SongLabels song={song} />
         </CardContent>
