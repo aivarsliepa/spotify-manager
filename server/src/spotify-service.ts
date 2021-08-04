@@ -7,18 +7,31 @@ import { plusSeconds, createUrlWithParams, wait } from "./utils";
 import { transformSpotifyPlaylistToData, transformSpotifyTrackToData } from "./data/transformers";
 import { SpotifySongData } from "./data/Song";
 
-const apiURLs = Object.freeze({
-  token: "https://accounts.spotify.com/api/token",
-  myTracks: "https://api.spotify.com/v1/me/tracks",
-  myPlaylists: "https://api.spotify.com/v1/me/playlists",
+const apiConfig = {
   // tracks: "https://api.spotify.com/v1/tracks",
+  token: "https://accounts.spotify.com/api/token",
+  myTracks: {
+    url: "https://api.spotify.com/v1/me/tracks",
+    params: {
+      limit: "50",
+    },
+  },
+  myPlaylists: {
+    url: "https://api.spotify.com/v1/me/playlists",
+    params: {
+      limit: "50",
+    },
+  },
   play: "https://api.spotify.com/v1/me/player/play",
-  playlistTracks: (playlistId: string) => `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-});
-
-const marketParam = Object.freeze({
-  market: "from_token",
-});
+  playlistTracks: {
+    buildURL: (playlistId: string) => `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    params: {
+      limit: "100",
+      market: "from_token",
+      fields: "total,limit,items(track(images,linked_from,id,name,uri,album(images),artists(name)))",
+    },
+  },
+};
 
 async function refreshToken(user: UserDocument): Promise<string> {
   const refresh_token = user.spotifyRefreshToken;
@@ -32,7 +45,7 @@ async function refreshToken(user: UserDocument): Promise<string> {
     "Content-Type": "application/x-www-form-urlencoded",
   };
 
-  const res = await fetch(apiURLs.token, {
+  const res = await fetch(apiConfig.token, {
     method: "POST",
     headers,
     body,
@@ -77,18 +90,20 @@ async function fetchWithRetry<T>(url: string, token: string): Promise<T> {
 }
 
 export async function fetchUserSavedTracks(token: string): Promise<SpotifySongData[]> {
-  const responses = await fetchAllFromAPI<SpotifyApi.UsersSavedTracksResponse>(apiURLs.myTracks, token);
+  const { url, params } = apiConfig.myTracks;
+  const responses = await fetchAllFromAPI<SpotifyApi.UsersSavedTracksResponse>(url, token, params);
   return responses.map(response => response.items.map(item => transformSpotifyTrackToData(item.track))).flat();
 }
 
 export async function fetchPlaylistData(token: string): Promise<SharedTypes.Playlist[]> {
-  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(apiURLs.myPlaylists, token);
+  const { url, params } = apiConfig.myPlaylists;
+  const playlistResponses = await fetchAllFromAPI<SpotifyApi.ListOfCurrentUsersPlaylistsResponse>(url, token, params);
   return playlistResponses.map(playlistReponse => playlistReponse.items.map(transformSpotifyPlaylistToData)).flat();
 }
 
 export async function playSongs(token: string, uris: string[]): Promise<void> {
   // const res =
-  await fetch(apiURLs.play, {
+  await fetch(apiConfig.play, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -103,19 +118,19 @@ export async function playSongs(token: string, uris: string[]): Promise<void> {
   // console.log(resBody);
 }
 
-export async function fetchAllFromAPI<T extends { total: number }>(
+export async function fetchAllFromAPI<T extends { total: number; limit: number }>(
   apiUrl: string,
   token: string,
   params: Record<string, string> = {}
 ): Promise<T[]> {
   // need to make first request to see the total number of items -> `response.body.total`
-  const url = createUrlWithParams(apiUrl, { limit: "50", ...params });
+  const url = createUrlWithParams(apiUrl, { ...params });
   const firstRequestBody = await fetchWithRetry<T>(url, token);
 
   // prepare requests for the rest of the playlists
   const urls: string[] = [];
-  for (let i = 50; i < firstRequestBody.total; i += 50) {
-    urls.push(createUrlWithParams(apiUrl, { limit: "50", offset: i.toString(), ...params }));
+  for (let i = firstRequestBody.limit; i < firstRequestBody.total; i += firstRequestBody.limit) {
+    urls.push(createUrlWithParams(apiUrl, { offset: i.toString(), ...params }));
   }
 
   const requests = urls.map(url => fetchWithRetry<T>(url, token));
@@ -125,8 +140,8 @@ export async function fetchAllFromAPI<T extends { total: number }>(
 }
 
 export async function fetchPlaylistSongsByPlaylistId(token: string, playlistId: string): Promise<SpotifySongData[]> {
-  const url = apiURLs.playlistTracks(playlistId);
-  const responses = await fetchAllFromAPI<SpotifyApi.PlaylistTrackResponse>(url, token, marketParam);
+  const url = apiConfig.playlistTracks.buildURL(playlistId);
+  const responses = await fetchAllFromAPI<SpotifyApi.PlaylistTrackResponse>(url, token, apiConfig.playlistTracks.params);
   return responses
     .map(reponse => reponse.items)
     .flat()
