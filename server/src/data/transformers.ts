@@ -46,3 +46,5 @@ export const transformSongDocumentToSharedSong = (songDocument: SongDocument): S
     image,
   };
 };
+
+export const stringToObjectId = (id: string): Types.ObjectId => Types.ObjectId(id);
