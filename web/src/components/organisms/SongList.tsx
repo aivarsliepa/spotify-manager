@@ -29,10 +29,10 @@ import {
   draftExcludeLabel,
   draftIncludeLabel,
   applyDraft,
-  selectAppliedExcludeLabelsFilter,
-  selectAppliedIncludeLabelsFilter,
-  selectDraftExcludeLabelsFilter,
-  selectDraftIncludeLabelsFilter,
+  selectAppliedExcludeLabelsFilterSet,
+  selectAppliedIncludeLabelsFilterSet,
+  selectDraftExcludeLabelsFilterSet,
+  selectDraftIncludeLabelsFilterSet,
   selectHasDraftAnyChanges,
 } from "../../store/filterSlice";
 import { useStyles } from "../../styleHooks";
@@ -46,10 +46,10 @@ export default function SongList({ songs }: Props) {
   const styles = useStyles();
   const history = useHistory();
   const allLabelsQuery = useGetAllLabelsQuery();
-  const appliedExcludeLabels = useAppSelector(selectAppliedExcludeLabelsFilter);
-  const appliedIncludeLabels = useAppSelector(selectAppliedIncludeLabelsFilter);
-  const draftExcludeLabels = useAppSelector(selectDraftExcludeLabelsFilter);
-  const draftIncludeLabels = useAppSelector(selectDraftIncludeLabelsFilter);
+  const appliedExcludeLabels = useAppSelector(selectAppliedExcludeLabelsFilterSet);
+  const appliedIncludeLabels = useAppSelector(selectAppliedIncludeLabelsFilterSet);
+  const draftExcludeLabels = useAppSelector(selectDraftExcludeLabelsFilterSet);
+  const draftIncludeLabels = useAppSelector(selectDraftIncludeLabelsFilterSet);
   const isDraftDifferent = useAppSelector(selectHasDraftAnyChanges);
   const dispatch = useAppDispatch();
   const theme = useTheme();

@@ -74,13 +74,27 @@ export const {
   applyDraft,
 } = slice.actions;
 
-export const selectDraftIncludeLabelsFilter = (state: RootState) => new Set(state.filter.draft.labels.include);
-export const selectDraftExcludeLabelsFilter = (state: RootState) => new Set(state.filter.draft.labels.exclude);
-export const selectAppliedIncludeLabelsFilter = (state: RootState) => new Set(state.filter.applied.labels.include);
-export const selectAppliedExcludeLabelsFilter = (state: RootState) => new Set(state.filter.applied.labels.exclude);
+const stringsToSet = (strings: string[]) => new Set(strings);
+
+const selectDraftIncludeLabelsFilter = (state: RootState) => state.filter.draft.labels.include;
+export const selectDraftIncludeLabelsFilterSet = createSelector([selectDraftIncludeLabelsFilter], stringsToSet);
+
+const selectDraftExcludeLabelsFilter = (state: RootState) => state.filter.draft.labels.exclude;
+export const selectDraftExcludeLabelsFilterSet = createSelector([selectDraftExcludeLabelsFilter], stringsToSet);
+
+const selectAppliedIncludeLabelsFilter = (state: RootState) => state.filter.applied.labels.include;
+export const selectAppliedIncludeLabelsFilterSet = createSelector([selectAppliedIncludeLabelsFilter], stringsToSet);
+
+const selectAppliedExcludeLabelsFilter = (state: RootState) => state.filter.applied.labels.exclude;
+export const selectAppliedExcludeLabelsFilterSet = createSelector([selectAppliedExcludeLabelsFilter], stringsToSet);
 
 export const selectHasDraftAnyChanges = createSelector(
-  [selectDraftIncludeLabelsFilter, selectDraftExcludeLabelsFilter, selectAppliedIncludeLabelsFilter, selectAppliedExcludeLabelsFilter],
+  [
+    selectDraftIncludeLabelsFilterSet,
+    selectDraftExcludeLabelsFilterSet,
+    selectAppliedIncludeLabelsFilterSet,
+    selectAppliedExcludeLabelsFilterSet,
+  ],
   (draftInclude, draftExclude, appliedInclude, appliedExclude) => {
     if (draftInclude.size !== appliedInclude.size || draftExclude.size !== appliedExclude.size) {
       return true;

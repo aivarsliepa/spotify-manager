@@ -4,12 +4,12 @@ import SongList from "../organisms/SongList";
 import { useGetAllSongsQuery } from "../../store/api";
 import SpinnerTemplate from "../templates/SpinnerTemplate";
 import { useAppSelector } from "../../store/hooks";
-import { selectAppliedExcludeLabelsFilter, selectAppliedIncludeLabelsFilter } from "../../store/filterSlice";
+import { selectAppliedExcludeLabelsFilterSet, selectAppliedIncludeLabelsFilterSet } from "../../store/filterSlice";
 import { createLabelListString } from "../../utils";
 
 export default function Songs() {
-  const includeLabelsSet = useAppSelector(selectAppliedIncludeLabelsFilter);
-  const excludeLabelsSet = useAppSelector(selectAppliedExcludeLabelsFilter);
+  const includeLabelsSet = useAppSelector(selectAppliedIncludeLabelsFilterSet);
+  const excludeLabelsSet = useAppSelector(selectAppliedExcludeLabelsFilterSet);
   const includeLabels = createLabelListString(includeLabelsSet);
   const excludeLabels = createLabelListString(excludeLabelsSet);
 
