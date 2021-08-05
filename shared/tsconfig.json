@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["ES2019"],
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "outDir": "build",
+    "baseUrl": ".",
+    "target": "es5",
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "UMD",
+    "downlevelIteration": true,
+    "noFallthroughCasesInSwitch": true,
+    "declaration": true
+  },
+  "include": ["src/**/*"]
+}

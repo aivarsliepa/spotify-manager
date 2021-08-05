@@ -1,12 +1,15 @@
 {
   "name": "@aivarsliepa/shared",
   "version": "1.0.0",
-  "description": "Shared types",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "description": "Shared types and code",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rm -rf ./build/ && tsc"
   },
   "author": "Aivars Liepa",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.3.5"
+  }
 }

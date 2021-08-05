@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useHistory } from "react-router-dom";
+import { Playlist } from "@aivarsliepa/shared";
 
-import { Playlist } from "../../../../shared";
 import ListContent from "../molecules/ListContent";
 import ContentListItem from "../atoms/ContentListItem";
 

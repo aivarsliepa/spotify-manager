@@ -1,8 +1,7 @@
 import { useCallback } from "react";
 import { Box } from "@material-ui/core";
-import * as SharedTypes from "@aivarsliepa/shared";
+import { Label, Song } from "@aivarsliepa/shared";
 
-import { Song } from "../../../../shared";
 import { useAppDispatch } from "../../store/hooks";
 import { createLabel, setLabelsToSong, useGetAllLabelsQuery, useGetSongByIdQuery } from "../../store/api";
 import LabelList from "./LabelList";
@@ -32,11 +31,11 @@ export default function SongLabels({ song: { labelIds, spotifyId } }: Props) {
 
       const existingLabel = allLabels!.labels.find(label => label.name === newLabel);
       if (existingLabel) {
-        await dispatch(setLabelsToSong({ songId: spotifyId, labels: [...new Set([...labelIds, existingLabel.id])] }));
+        await dispatch(setLabelsToSong({ songId: spotifyId, labels: [...labelIds, existingLabel.id] }));
       } else {
         const thunkResponse = await dispatch(createLabel({ name: newLabel }));
-        const labelId = (thunkResponse.payload as SharedTypes.Label).id;
-        await dispatch(setLabelsToSong({ songId: spotifyId, labels: [...new Set([...labelIds, labelId])] }));
+        const labelId = (thunkResponse.payload as Label).id;
+        await dispatch(setLabelsToSong({ songId: spotifyId, labels: [...labelIds, labelId] }));
         labelsQuery.refetch(); // TODO: fix update hack
       }
 

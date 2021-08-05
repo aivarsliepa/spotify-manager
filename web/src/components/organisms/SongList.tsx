@@ -17,8 +17,8 @@ import {
 } from "@material-ui/core";
 import { useCallback, useMemo, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
+import { Label, Song } from "@aivarsliepa/shared";
 
-import { Label, Song } from "../../../../shared";
 import { createSongName } from "../../utils";
 import ContentListItem from "../atoms/ContentListItem";
 import ListContent from "../molecules/ListContent";
@@ -28,7 +28,6 @@ import {
   draftClearLabel,
   draftExcludeLabel,
   draftIncludeLabel,
-  applyDraft,
   selectAppliedExcludeLabelsFilterSet,
   selectAppliedIncludeLabelsFilterSet,
   selectDraftExcludeLabelsFilterSet,
@@ -36,6 +35,7 @@ import {
   selectHasDraftAnyChanges,
 } from "../../store/filterSlice";
 import { useStyles } from "../../styleHooks";
+import { createSongsURL } from "../../router/helpers";
 
 interface Props {
   songs: Song[];
@@ -63,9 +63,9 @@ export default function SongList({ songs }: Props) {
   );
 
   const applyFilters = useCallback(() => {
-    dispatch(applyDraft());
+    history.push(createSongsURL({ excludeLabels: draftExcludeLabels, includeLabels: draftIncludeLabels }));
     setShouldShowFilters(false);
-  }, [dispatch, setShouldShowFilters]);
+  }, [history, draftExcludeLabels, draftIncludeLabels, setShouldShowFilters]);
 
   const labelsMap = useMemo(() => {
     const labelsMap = new Map<string, Label>();
@@ -116,12 +116,12 @@ export default function SongList({ songs }: Props) {
   }, [allLabelsQuery.data, dispatch, draftExcludeLabels, draftIncludeLabels, theme.palette.error.main, theme.palette.primary.main]);
 
   const includeFilters = useMemo(
-    () => [...appliedIncludeLabels.values()].map(labelId => <Chip key={labelId} label={labelsMap.get(labelId)?.name} color="primary" />),
+    () => Array.from(appliedIncludeLabels).map(labelId => <Chip key={labelId} label={labelsMap.get(labelId)?.name} color="primary" />),
     [appliedIncludeLabels, labelsMap]
   );
 
   const excludeFilters = useMemo(
-    () => [...appliedExcludeLabels.values()].map(labelId => <Chip key={labelId} label={labelsMap.get(labelId)?.name} color="error" />),
+    () => Array.from(appliedExcludeLabels).map(labelId => <Chip key={labelId} label={labelsMap.get(labelId)?.name} color="error" />),
     [appliedExcludeLabels, labelsMap]
   );
 

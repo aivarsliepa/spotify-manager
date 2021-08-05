@@ -1,4 +1,4 @@
-import { Song } from "../../shared";
+import { Song } from "@aivarsliepa/shared";
 
 export function deleteAllCookies() {
   const cookies = document.cookie.split(";");
@@ -10,8 +10,4 @@ export function deleteAllCookies() {
 }
 export function createSongName(song: Song): string {
   return `${song.name} - ${song.artists.join(", ")}`;
-}
-
-export function createLabelListString(labels: Set<string>): string {
-  return [...labels].sort().join(",");
 }

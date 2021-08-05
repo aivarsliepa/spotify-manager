@@ -60,7 +60,7 @@ export const getSongs: RequestHandler = async (req, res) => {
     }
 
     const playlistSpotifyId = stringOrDefault(playlistId);
-    let songDocs = [...user.songs.values()];
+    let songDocs = Array.from(user.songs.values());
 
     if (playlistSpotifyId) {
       if (!isPlaylistSpotifyIdValid(user, playlistSpotifyId)) {

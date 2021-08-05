@@ -16,7 +16,7 @@
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "test": "jest --forceExit --coverage --verbose",
     "watch-test": "npm run test -- --watchAll",
-    "build-ts": "tsc",
+    "build-ts": "rm -rf ./dist/ && tsc",
     "watch-ts": "tsc -w",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "debug": "npm run build && npm run watch-debug",
@@ -24,6 +24,7 @@
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
   },
   "dependencies": {
+    "@aivarsliepa/shared": "file:../shared",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
@@ -37,7 +38,6 @@
     "passport-spotify": "^1.1.0"
   },
   "devDependencies": {
-    "@aivarsliepa/shared": "file:../shared",
     "@types/body-parser": "^1.19.1",
     "@types/compression": "^1.7.1",
     "@types/cors": "^2.8.12",

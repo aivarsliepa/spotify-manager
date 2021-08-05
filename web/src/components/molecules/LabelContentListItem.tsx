@@ -4,19 +4,22 @@ import { useCallback, useContext, useState } from "react";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
-import * as SharedTypes from "@aivarsliepa/shared";
+import SharedTypes from "@aivarsliepa/shared";
 import CheckIcon from "@material-ui/icons/Check";
+import { useHistory } from "react-router-dom";
 
 import { deleteLabel, mergeLabels, patchLabel, useGetAllLabelsQuery, useGetLabelStatsByIdQuery } from "../../store/api";
 import { DialogContext } from "../organisms/DialogRoot";
 import { useAppDispatch } from "../../store/hooks";
+import { createSongsURL } from "../../router/helpers";
 
 interface Props {
   label: SharedTypes.Label;
 }
 
-// TODO: this will need to reworked once all the logic is done and it's more clear how it all fits
+// TODO: this will need to be reworked once all the logic is done and it's more clear how it all fits
 export default function LabelContentListItem({ label: { id, name } }: Props) {
+  const history = useHistory();
   const labelStatsQuery = useGetLabelStatsByIdQuery(id);
   const labelsQuery = useGetAllLabelsQuery();
   const [isHovered, setIsHovered] = useState(false);
@@ -78,8 +81,8 @@ export default function LabelContentListItem({ label: { id, name } }: Props) {
   }, [labelsQuery, rename, dispatch, id, dialogContext, name]);
 
   const openSongs = useCallback(() => {
-    // TODO
-  }, []);
+    history.push(createSongsURL({ includeLabels: new Set([id]) }));
+  }, [history, id]);
 
   const style: { bgcolor?: string } = {};
   if (isHovered) {

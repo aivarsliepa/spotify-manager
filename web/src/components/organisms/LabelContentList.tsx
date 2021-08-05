@@ -1,7 +1,7 @@
 import { Card, CardContent, List, TextField, Typography } from "@material-ui/core";
 import { useCallback, useState, useMemo } from "react";
+import { Label } from "@aivarsliepa/shared";
 
-import { Label } from "../../../../shared";
 import LabelContentListItem from "../molecules/LabelContentListItem";
 
 interface Props {

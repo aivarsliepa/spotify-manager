@@ -18,6 +18,9 @@ $ npm start
 ## Update shared types
 
 ```shell
-# from each client
+# 1. from shared root
+$ npm run build
+
+# 2. from each client
 $ npm i @aivarsliepa/shared
 ```

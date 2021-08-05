@@ -35,3 +35,7 @@ export interface GetLabelsResponse {
 export interface GetLabelStatsResponse {
   numberOfSongs: number;
 }
+
+export function CsvToArr(input: string): string[] {
+  return input.split(",").filter(val => !!val);
+}

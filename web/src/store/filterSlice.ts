@@ -29,6 +29,11 @@ const initialState: FilterState = {
   },
 };
 
+type SetAppliedFiltersPayload = {
+  includeLabels: string[];
+  excludeLabels: string[];
+};
+
 export const slice = createSlice({
   name: "filter",
   initialState,
@@ -45,34 +50,14 @@ export const slice = createSlice({
       state.draft.labels.include = state.draft.labels.include.filter(label => label !== action.payload);
       state.draft.labels.exclude = state.draft.labels.exclude.filter(label => label !== action.payload);
     },
-    appliedIncludeLabel(state, action: PayloadAction<string>) {
-      state.applied.labels.include.push(action.payload);
-      state.applied.labels.exclude = state.applied.labels.exclude.filter(label => label !== action.payload);
-    },
-    appliedExcludeLabel(state, action: PayloadAction<string>) {
-      state.applied.labels.include = state.applied.labels.include.filter(label => label !== action.payload);
-      state.applied.labels.exclude.push(action.payload);
-    },
-    appliedClearLabel(state, action: PayloadAction<string>) {
-      state.applied.labels.include = state.applied.labels.include.filter(label => label !== action.payload);
-      state.applied.labels.exclude = state.applied.labels.exclude.filter(label => label !== action.payload);
-    },
-    applyDraft(state) {
-      state.applied.labels.include = state.draft.labels.include;
-      state.applied.labels.exclude = state.draft.labels.exclude;
+    setAppliedFilters(state, action: PayloadAction<SetAppliedFiltersPayload>) {
+      state.applied.labels.include = action.payload.includeLabels;
+      state.applied.labels.exclude = action.payload.excludeLabels;
     },
   },
 });
 
-export const {
-  appliedClearLabel,
-  appliedExcludeLabel,
-  appliedIncludeLabel,
-  draftClearLabel,
-  draftExcludeLabel,
-  draftIncludeLabel,
-  applyDraft,
-} = slice.actions;
+export const { setAppliedFilters, draftClearLabel, draftExcludeLabel, draftIncludeLabel } = slice.actions;
 
 const stringsToSet = (strings: string[]) => new Set(strings);
 

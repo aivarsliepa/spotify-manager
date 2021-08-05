@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { CsvToArr } from "@aivarsliepa/shared";
 
 import { UserDocument } from "./User";
 
@@ -23,7 +24,7 @@ export function transformAndValideStringLabelIds(user: UserDocument, labelIdsStr
     };
   }
 
-  const potentialIds = labelIdsString.split(",").map(id => id.trim());
+  const potentialIds = CsvToArr(labelIdsString);
 
   // no duplicates
   const potentialIdsSet = new Set(potentialIds);

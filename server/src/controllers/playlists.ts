@@ -20,7 +20,7 @@ export const getAllSongsForPlaylist: RequestHandler = async (req, res) => {
     const user = req.user;
     const { playlistId } = req.params;
 
-    const songs = selectSongsByPlaylistId([...user.songs.values()], playlistId).map(transformSongDocumentToSharedSong);
+    const songs = selectSongsByPlaylistId(Array.from(user.songs.values()), playlistId).map(transformSongDocumentToSharedSong);
 
     const resBody: SharedTypes.GetSongsResponse = { songs };
     res.json(resBody);

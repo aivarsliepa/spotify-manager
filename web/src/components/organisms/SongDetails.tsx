@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import { Typography, Box, Card, CardContent, CardMedia, IconButton } from "@material-ui/core";
 import { PlayArrow } from "@material-ui/icons";
+import { Song } from "@aivarsliepa/shared";
 
 import SongLabels from "../molecules/SongLabels";
-import { Song } from "../../../../shared";
 import { useAppDispatch } from "../../store/hooks";
 import { playSong } from "../../store/api";
 

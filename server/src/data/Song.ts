@@ -23,8 +23,8 @@ interface SongDocumentData extends SharedTypes.SpotifyIdObject {
 export type SongDocument = SongDocumentData & Document;
 
 export const songSchema = new Schema<SongDocument>({
-  labels: [{ required: true, type: Types.ObjectId, ref: "User.labels" }], // it does not automatically remove refences when removing
-  playlists: [{ required: true, type: String }],
+  labels: [{ required: true, type: Types.ObjectId, ref: "User.labels", unique: true }], // it does not automatically remove refences when removing
+  playlists: [{ required: true, type: String, unique: true }],
   spotifyId: { required: true, type: String, unique: true },
   name: { required: true, type: String },
   isSaved: { required: true, type: Boolean },
@@ -37,7 +37,7 @@ export const songSchema = new Schema<SongDocument>({
 function newSong({ name, artists, spotifyId, uri, image }: SpotifySongData): SongDocumentData {
   return {
     name,
-    artists: [...artists],
+    artists: artists.slice(),
     spotifyId,
     labels: [],
     isSaved: false,
