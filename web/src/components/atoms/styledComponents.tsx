@@ -1,5 +1,5 @@
 import { Box, styled } from "@material-ui/core";
-import { CSSProperties } from "@material-ui/styles";
+import { CSSProperties } from "react";
 
 export const flexGrowColumnMixin: CSSProperties = {
   display: "flex",
