@@ -1,19 +1,19 @@
 import { Card, CardContent, List, Typography } from "@material-ui/core";
-import { useStyles } from "../../styleHooks";
+
 import { WithChildren } from "../../types";
+import { flexGrowColumnMixin } from "../atoms/styledComponents";
 
 type Props = WithChildren<{
   header: string;
 }>;
 
 export default function ListContent({ header, children }: Props) {
-  const styles = useStyles();
   return (
-    <Card raised className={styles.flexGrowColumn}>
+    <Card raised sx={{ ...flexGrowColumnMixin }}>
       <CardContent>
         <Typography variant="h5">{header}</Typography>
       </CardContent>
-      <List className={styles.flexGrowColumn}>{children}</List>
+      <List sx={{ ...flexGrowColumnMixin }}>{children}</List>
     </Card>
   );
 }

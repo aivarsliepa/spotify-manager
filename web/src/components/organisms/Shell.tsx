@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import Header from "../molecules/header/Header";
 import AppDrawer from "./AppDrawer";
 import { WithChildren } from "../../types";
-import { useStyles } from "../../styleHooks";
+import { flexGrowColumnMixin } from "../atoms/styledComponents";
 
 const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -24,15 +24,13 @@ const useAuth = () => {
 export default function Shell({ children }: WithChildren) {
   useAuth();
   const isLoggedIn = useAppSelector(selectLoggedIn);
-  const styles = useStyles();
 
   return (
     <>
       <Header />
-      {/* Have to use sx={} , because class gets overwritten */}
-      <Container sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+      <Container sx={{ ...flexGrowColumnMixin }}>
         {isLoggedIn && <AppDrawer />}
-        <Box component="main" className={styles.flexGrowColumn} sx={{ p: 3 }}>
+        <Box component="main" sx={{ ...flexGrowColumnMixin, p: 3 }}>
           <Toolbar /> {/* To push down content from toolbar */}
           {children}
         </Box>

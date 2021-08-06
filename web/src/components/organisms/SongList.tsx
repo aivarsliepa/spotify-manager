@@ -34,8 +34,8 @@ import {
   selectDraftIncludeLabelsFilterSet,
   selectHasDraftAnyChanges,
 } from "../../store/filterSlice";
-import { useStyles } from "../../styleHooks";
 import { createSongsURL } from "../../router/helpers";
+import { flexGrowColumnMixin } from "../atoms/styledComponents";
 
 interface Props {
   songs: Song[];
@@ -43,7 +43,6 @@ interface Props {
 
 // TODO: extract into multiple components
 export default function SongList({ songs }: Props) {
-  const styles = useStyles();
   const history = useHistory();
   const allLabelsQuery = useGetAllLabelsQuery();
   const appliedExcludeLabels = useAppSelector(selectAppliedExcludeLabelsFilterSet);
@@ -151,7 +150,7 @@ export default function SongList({ songs }: Props) {
         </AccordionDetails>
       </Accordion>
 
-      <Box className={styles.flexGrowColumn}>
+      <Box sx={{ ...flexGrowColumnMixin }}>
         <AutoSizer>
           {({ height, width }) => (
             <FixedSizeList height={height} itemCount={songs.length} itemSize={64} width={width}>
