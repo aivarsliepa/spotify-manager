@@ -1,64 +1,28 @@
-import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar } from "@material-ui/core";
+import { Drawer as MuiDrawer, Stack, styled, Toolbar } from "@material-ui/core";
 import MusicIcon from "@material-ui/icons/LibraryMusic";
 import ListIcon from "@material-ui/icons/List";
 import LabelIcon from "@material-ui/icons/Label";
 
-import { useHistory } from "react-router-dom";
-import { useCallback } from "react";
-
 import HomeIcon from "../atoms/icons/HomeIcon";
+import NavLinkButton from "../atoms/NavLinkButton";
 
 const drawerWidth = 240;
+const Drawer = styled(MuiDrawer)({
+  width: drawerWidth,
+  flexShrink: 0,
+  [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" },
+});
 
 export default function AppDrawer() {
-  const history = useHistory();
-  const onHomeClick = useCallback(() => history.push("/"), [history]);
-  const onPlaylistsClick = useCallback(() => history.push("/playlists"), [history]);
-  const onSongsClick = useCallback(() => history.push("/songs"), [history]);
-  const onLabelsClick = useCallback(() => history.push("/labels"), [history]);
-
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" },
-      }}
-    >
+    <Drawer variant="permanent">
       <Toolbar />
-      <Box sx={{ overflow: "auto" }}>
-        <List>
-          {/* Home is probably not needed, will keep for no */}
-          <ListItem button onClick={onHomeClick}>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItem>
-
-          <ListItem button onClick={onPlaylistsClick}>
-            <ListItemIcon>
-              <ListIcon />
-            </ListItemIcon>
-            <ListItemText primary="Playlists" />
-          </ListItem>
-
-          <ListItem button onClick={onSongsClick}>
-            <ListItemIcon>
-              <MusicIcon />
-            </ListItemIcon>
-            <ListItemText primary="Songs" />
-          </ListItem>
-
-          <ListItem button onClick={onLabelsClick}>
-            <ListItemIcon>
-              <LabelIcon />
-            </ListItemIcon>
-            <ListItemText primary="Labels" />
-          </ListItem>
-        </List>
-      </Box>
+      <Stack direction="column" sx={{ overflow: "auto" }}>
+        <NavLinkButton to="/" icon={<HomeIcon />} label="Home" exact />
+        <NavLinkButton to="/songs" icon={<MusicIcon />} label="Songs" />
+        <NavLinkButton to="/playlists" icon={<ListIcon />} label="Playlists" />
+        <NavLinkButton to="/labels" icon={<LabelIcon />} label="Labels" />
+      </Stack>
     </Drawer>
   );
 }
