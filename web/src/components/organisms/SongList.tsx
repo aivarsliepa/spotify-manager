@@ -14,10 +14,14 @@ import {
   Button,
   Chip,
   Box,
+  IconButton,
+  Popper,
+  Card,
 } from "@material-ui/core";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import { Label, Song } from "@aivarsliepa/shared";
+import LabelIcon from "@material-ui/icons/Label";
 
 import { createSongName } from "../../utils";
 import ContentListItem from "../atoms/ContentListItem";
@@ -36,6 +40,7 @@ import {
 } from "../../store/filterSlice";
 import { createSongsURL } from "../../router/helpers";
 import { flexGrowColumnMixin } from "../atoms/styledComponents";
+import { checkIds, selectCheckboxes, toggleId, uncheckAll } from "../../store/checkboxesSlice";
 
 interface Props {
   songs: Song[];
@@ -53,6 +58,8 @@ export default function SongList({ songs }: Props) {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const [shouldShowFilters, setShouldShowFilters] = useState(false);
+
+  const checkboxes = useAppSelector(selectCheckboxes);
 
   const onAccordionChange = useCallback(
     (_, expanded: boolean) => {
@@ -124,12 +131,60 @@ export default function SongList({ songs }: Props) {
     [appliedExcludeLabels, labelsMap]
   );
 
+  const areAllSongsChecked = useMemo(() => {
+    for (const song of songs) {
+      if (!checkboxes[song.spotifyId]) {
+        return false;
+      }
+    }
+    return true;
+  }, [checkboxes, songs]);
+
+  const areNoneSongsChecked = useMemo(() => {
+    for (const song of songs) {
+      if (checkboxes[song.spotifyId]) {
+        return false;
+      }
+    }
+    return true;
+  }, [checkboxes, songs]);
+
+  const onMainCheckboxClick = useCallback(() => {
+    if (areAllSongsChecked) {
+      dispatch(uncheckAll());
+    } else {
+      dispatch(checkIds(songs.map(song => song.spotifyId)));
+    }
+  }, [dispatch, areAllSongsChecked, songs]);
+
+  const [openPopper, setOpenPopper] = useState(false);
+  const togglePopper = useCallback(() => setOpenPopper(prevState => !prevState), []);
+
+  const labelsRef = useRef<HTMLButtonElement>(null);
+
   if (!allLabelsQuery.data) {
     return <div>Loading....</div>;
   }
 
   return (
-    <ListContent header="Songs">
+    <ListContent>
+      <Box>
+        <Checkbox
+          checked={areAllSongsChecked}
+          indeterminate={!(areAllSongsChecked || areNoneSongsChecked)}
+          onClick={onMainCheckboxClick}
+          color="secondary"
+        />
+        {/* TODO: make it a component ?  */}
+
+        <IconButton aria-label="modify labels for selected" onClick={togglePopper} ref={labelsRef}>
+          <LabelIcon />
+        </IconButton>
+        {/* TODO */}
+        <Popper open={openPopper} anchorEl={labelsRef.current} placement="bottom-start">
+          <Card>TODO: The content of the Popper.</Card>
+        </Popper>
+      </Box>
       <Stack direction="row" spacing={1} sx={{ marginBottom: 1, marginX: 1 }}>
         {includeFilters} {excludeFilters}
       </Stack>
@@ -163,6 +218,11 @@ export default function SongList({ songs }: Props) {
                     image={song.image}
                     key={song.spotifyId}
                     onClick={() => history.push(`/songs/${song.spotifyId}`)}
+                    isChecked={checkboxes[song.spotifyId]}
+                    onCheckboxClick={e => {
+                      e.stopPropagation();
+                      dispatch(toggleId(song.spotifyId));
+                    }}
                   />
                 );
               }}

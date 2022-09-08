@@ -1,22 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import authReducer, { login, selectJWT, selectLoggedIn } from "./authSlice";
+import authReducer, { selectJWT, selectLoggedIn } from "./authSlice";
 import filterReducer from "./filterSlice";
+import checkboxReducer from "./checkboxesSlice";
 import api from "./api";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     filter: filterReducer,
+    checkboxes: checkboxReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(api.middleware),
 });
-
-const storedJwt = localStorage.getItem("jwt");
-if (storedJwt) {
-  store.dispatch(login(storedJwt));
-}
 
 window.addEventListener("beforeunload", () => {
   const loggedIn = selectLoggedIn(store.getState());

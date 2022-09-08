@@ -8,7 +8,7 @@ export interface AuthState {
 }
 
 const initialState: AuthState = {
-  jwt: "",
+  jwt: localStorage.getItem("jwt") ?? "",
 };
 
 export const logoutThunk = createAsyncThunk("auth/logout", async () => {

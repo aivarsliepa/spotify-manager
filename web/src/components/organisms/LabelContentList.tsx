@@ -1,4 +1,4 @@
-import { Card, CardContent, List, TextField, Typography } from "@material-ui/core";
+import { Card, List, TextField } from "@material-ui/core";
 import { useCallback, useState, useMemo } from "react";
 import { Label } from "@aivarsliepa/shared";
 
@@ -19,10 +19,7 @@ export default function LabelContentList({ labels }: Props) {
 
   return (
     <Card raised>
-      <CardContent>
-        <Typography variant="h5">Labels</Typography>
-        <TextField sx={{ padding: 2, width: "100%" }} placeholder="Search.." type="search" value={searchText} onChange={onSearchChage} />
-      </CardContent>
+      <TextField sx={{ padding: 2, width: "100%" }} placeholder="Search.." type="search" value={searchText} onChange={onSearchChage} />
 
       <List>{listItems}</List>
     </Card>

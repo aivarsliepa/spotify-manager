@@ -20,10 +20,13 @@ export default function PlaylistList({ playlists }: Props) {
           key={playlist.spotifyId}
           image={playlist.image}
           onClick={() => history.push(`/playlists/${playlist.spotifyId}`)}
+          onCheckboxClick={e => {
+            e.stopPropagation();
+          }}
         />
       )),
     [playlists, history]
   );
 
-  return <ListContent header="Playlists">{listItems}</ListContent>;
+  return <ListContent>{listItems}</ListContent>;
 }
